@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<h1 class="mt-4">Settings</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Settings</li>
+</ol>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Moodle Settings
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('reporting.settings_post') }}" method="POST">
+            <div class="form-group">
+                <label for="moodle_url">Moodle URL</label>
+                <input name="moodle_url" class="form-control" id="moodle_url"
+                       placeholder="Enter URL" value="{{ user.moodle_url }}">
+                <small id="url_help" class="form-text text-muted">Change if you want to use a different Moodle
+                    plattform</small>
+            </div>
+            <div class="form-group">
+                <label for="moodle_service">Moodle Service</label>
+                <input name="moodle_service" class="form-control" id="moodle_service" placeholder="Enter Service Name"
+                       value="{{ user.moodle_service }}">
+                <small id="service_help" class="form-text text-muted">Service must exist on Moodle plattform (ask you
+                    moodle administrator)</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
