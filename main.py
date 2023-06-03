@@ -18,9 +18,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db
 app.config["SESSION_SQLALCHEMY_TABLE"] = "sessions"
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_COOKIE_SECURE"] = True
-app.config["PERMANENT_SESSION_LIFETIME"] = 86400
+#app.config["SESSION_PERMANENT"] = False
+#app.config["SESSION_COOKIE_SECURE"] = True
+#app.config["PERMANENT_SESSION_LIFETIME"] = 86400
 db.init_app(app)
 login_manager.init_app(app)
 sess.init_app(app)

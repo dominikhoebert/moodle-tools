@@ -6,10 +6,10 @@ class User(db.Model):
     __tablename__ = 'user'
 
     username = db.Column(db.String, primary_key=True)
-    password = db.Column(db.String)
+    password = None
     authenticated = db.Column(db.Boolean, default=False)
-    moodle_url = db.Column(db.String, default="https://elearning.tgm.ac.at")
-    moodle_service = db.Column(db.String, default="tgm_hoedmoodlesync")
+    moodle_url = None
+    moodle_service = None
     moodle = None
 
     def login(self):
