@@ -6,18 +6,21 @@ from flask_login import current_user
 from user import User
 from user_management import reporting
 from todo import todo
+from create_groups import create_groups
 from models import db, login_manager, logger, sess
 from moodle_sync_testing import MoodleSyncTesting
 
 app = Flask(__name__)
 app.register_blueprint(reporting)
 app.register_blueprint(todo)
+app.register_blueprint(create_groups)
 app.secret_key = urandom(12)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db
 app.config["SESSION_SQLALCHEMY_TABLE"] = "sessions"
+#TODO add session timeout
 #app.config["SESSION_PERMANENT"] = False
 #app.config["SESSION_COOKIE_SECURE"] = True
 #app.config["PERMANENT_SESSION_LIFETIME"] = 86400

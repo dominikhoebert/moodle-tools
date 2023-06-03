@@ -1,6 +1,6 @@
 from user import User
 from models import db, logger
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from flask_login import current_user, login_user, logout_user
 
 reporting = Blueprint("reporting", __name__)
@@ -33,12 +33,14 @@ def login_post():
         user.login()
         session["moodle"] = user.moodle.to_json()
         logger.debug("Login success")
+        flash("Login success", "success")
         return redirect(url_for("index"))
     else:
         db.session.add(moodle_user)
         db.session.commit()
         login_user(moodle_user)
         logger.debug("Register success")
+        flash("Register success", "success")
         return redirect(url_for("index"))
 
 

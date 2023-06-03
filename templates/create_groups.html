@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block title %}App{% endblock %}
+{% block content %}
+<h1 class="mt-4">Create Groups</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Create Groups</li>
+</ol>
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fa-solid fa-file-arrow-up"></i>
+                Table File Upload
+            </div>
+            <div class="card-body">
+                <label class="form-label" for="customFile">Default file input example</label>
+                <input type="file" class="form-control" id="customFile"/>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fa-solid fa-sliders"></i>
+                Controls
+            </div>
+            <div class="card-body">
+                <form class="row gy-2 gx-3 align-items-center">
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    Select course
+                                </button>
+                                <ul class="dropdown-menu">
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    Select groupname column
+                                </button>
+                                <ul class="dropdown-menu">
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    Select Email/ID column
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Action</a></li>
+                                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-secondary">Enroll missing students</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-secondary">Create Groups</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-secondary">Add students to groups</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Students Preview
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Groups Preview
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
