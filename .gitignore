@@ -189,3 +189,4 @@ instance/*
 .env
 
 /data/
+/uploads/

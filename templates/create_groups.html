@@ -12,10 +12,19 @@
                 <i class="fa-solid fa-file-arrow-up"></i>
                 Table File Upload
             </div>
-            <div class="card-body">
-                <label class="form-label" for="customFile">Default file input example</label>
-                <input type="file" class="form-control" id="customFile"/>
-            </div>
+            <form action="/create-groups/file-upload" method="post" enctype=multipart/form-data>
+                <div class="card-body">
+                    <label class="form-label" for="customFile">Upload CSV or Excel File with Students and Groups</label>
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <input name="file" type="file" class="form-control" id="customFile"/>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
     <div class="col-xl-6">
@@ -88,6 +97,35 @@
                 Students Preview
             </div>
             <div class="card-body">
+                {% if students is not none %}
+                <table id="datatablesSimple">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>ID</th>
+                        <th>Group</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>ID</th>
+                        <th>Group</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for index,row in students.iterrows() %}
+                    <tr>
+                        {% for column in row %}
+                        <td>{{ column }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
             </div>
         </div>
     </div>
