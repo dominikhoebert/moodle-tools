@@ -1,0 +1,65 @@
+{% if students is not none %}
+<table id="datatablesSimple">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>ID</th>
+        <th>Group</th>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>ID</th>
+        <th>Group</th>
+    </tr>
+    </tfoot>
+    <tbody>
+    {% for index,row in students.iterrows() %}
+    <tr>
+        {% for column in row %}
+        <td>{{ column }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
+<table border="1" class="dataframe table table-striped table-hover">
+    <thead>
+    <tr style="text-align: right;">
+        <th></th>
+        <th>name</th>
+        <th>email</th>
+        <th>id</th>
+        <th>groupname</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th>0</th>
+        <td>Erhard List</td>
+        <td>elist@tgm.ac.at</td>
+        <td>4</td>
+        <td>group1</td>
+    </tr>
+    <tr>
+        <th>1</th>
+        <td>Christoph Brein</td>
+        <td>cbrein@tgm.ac.at</td>
+        <td>1366</td>
+        <td>group2</td>
+    </tr>
+    <tr>
+        <th>2</th>
+        <td>Dominik Höbert</td>
+        <td>dhoebert@tgm.ac.at</td>
+        <td>82</td>
+        <td>group2</td>
+    </tr>
+    </tbody>
+</table>

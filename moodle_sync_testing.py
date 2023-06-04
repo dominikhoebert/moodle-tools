@@ -22,6 +22,7 @@ class MoodleSyncTesting(MoodleSync):
         self.column_name = column_name
         self.group_column_name = group_column_name
         self.group_names_to_id = None
+        self.courses = None
 
     def __repr__(self):
         return f"MoodleSyncTesting(url={self.url}, username={self.username}, password={self.password}, service=" \
@@ -38,7 +39,8 @@ class MoodleSyncTesting(MoodleSync):
             "students": self.students.to_json() if self.students is not None else None,
             "column_name": self.column_name,
             "group_column_name": self.group_column_name,
-            "group_names_to_id": self.group_names_to_id
+            "group_names_to_id": self.group_names_to_id,
+            "courses": self.courses if self.courses is not None else None,
         }
 
     def from_json(json):
@@ -46,6 +48,7 @@ class MoodleSyncTesting(MoodleSync):
                                 pd.read_json(json["students"]) if json["students"] is not None else None,
                                 json["column_name"], json["group_column_name"])
         mst.group_names_to_id = json["group_names_to_id"]
+        mst.courses = json["courses"]
         return mst
 
     @property

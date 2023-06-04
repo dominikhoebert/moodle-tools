@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from flask_login import current_user
-from moodle_sync_testing import MoodleSyncTesting
+from markupsafe import Markup
 import pandas as pd
 import io
+
+from moodle_sync_testing import MoodleSyncTesting
 
 from models import logger
 
@@ -19,12 +21,14 @@ def allowed_file(filename):
 @create_groups.get("/")
 def create_groups_get():
     if current_user.get_id() is not None:
+        students = None
         if type(moodle_json := session.get("moodle", None)) is dict:
             current_user.moodle = MoodleSyncTesting.from_json(moodle_json)
-            logger.debug(current_user.moodle.students)
-            #if current_user.moodle.students is not None:
+            logger.debug(current_user.moodle.courses)
+            if current_user.moodle.students is not None:
+                students = current_user.moodle.students.to_html(table_id="datatablesSimple")
         return render_template("create_groups.html", username=current_user.get_id(),
-                               students=current_user.moodle.students)
+                               students=students, courses=current_user.moodle.courses)
     return redirect(url_for("reporting.login"))
 
 
@@ -32,12 +36,10 @@ def create_groups_get():
 def file_upload():
     if 'file' not in request.files:
         flash('No file part')
-        logger.debug("No file part")
         return redirect(url_for('create_groups.create_groups_get'))
     file = request.files.get('file')
     if file.filename == '':
         flash('No selected file')
-        logger.debug("No selected file")
         return redirect(url_for('create_groups.create_groups_get'))
     if file and allowed_file(file.filename):
         file.seek(0)

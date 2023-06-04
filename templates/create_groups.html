@@ -44,6 +44,11 @@
                                     Select course
                                 </button>
                                 <ul class="dropdown-menu">
+                                    {% if courses is not none %}
+                                    {% for key,value in courses.items() %}
+                                    <li><a class="dropdown-item" href="#">{{value}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
                                 </ul>
                             </div>
                         </div>
@@ -98,33 +103,7 @@
             </div>
             <div class="card-body">
                 {% if students is not none %}
-                <table id="datatablesSimple">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>ID</th>
-                        <th>Group</th>
-                    </tr>
-                    </thead>
-                    <tfoot>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>ID</th>
-                        <th>Group</th>
-                    </tr>
-                    </tfoot>
-                    <tbody>
-                    {% for index,row in students.iterrows() %}
-                    <tr>
-                        {% for column in row %}
-                        <td>{{ column }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                {{ students|safe }}
                 {% endif %}
             </div>
         </div>

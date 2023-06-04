@@ -16,7 +16,7 @@ class User(db.Model):
         self.moodle = MoodleSyncTesting(self.moodle_url, self.username, self.password, self.moodle_service, None, None,
                                         None, None)
         self.moodle.login()
-        print("Moodle login success")
+        self.moodle.courses = self.moodle.get_recent_courses()
 
     def is_active(self):
         """True, as all users are active."""

@@ -34,7 +34,7 @@ class MoodleSync:
 
     def get_recent_courses(self):
         response = moodle_api.call('core_course_get_recent_courses')
-        return {c['fullname']: {'id': c['id']} for c in response}
+        return {c['id']: c['fullname'] for c in response}
 
     def get_course_modules(self, course_id):
         response = moodle_api.call('core_course_get_contents', courseid=course_id)
