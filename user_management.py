@@ -21,7 +21,6 @@ def login_post():
         moodle_user = User(username=username, password=password, moodle_url=url,
                            moodle_service=service)
         moodle_user.login()
-        logger.debug(moodle_user.moodle.courses)
     except KeyError:
         logger.debug("Moodle Login failed")
         return redirect(url_for("error401"))

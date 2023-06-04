@@ -60,6 +60,11 @@
                                     Select groupname column
                                 </button>
                                 <ul class="dropdown-menu">
+                                    {% if columns is not none %}
+                                    {% for col in columns %}
+                                    <li><a class="dropdown-item" href="#">{{col}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
                                 </ul>
                             </div>
                         </div>
@@ -71,9 +76,11 @@
                                     Select Email/ID column
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Action</a></li>
-                                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    {% if columns is not none %}
+                                    {% for col in columns %}
+                                    <li><a class="dropdown-item" href="#">{{col}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
                                 </ul>
                             </div>
                         </div>

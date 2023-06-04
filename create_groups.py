@@ -22,13 +22,16 @@ def allowed_file(filename):
 def create_groups_get():
     if current_user.get_id() is not None:
         students = None
+        columns = None
         if type(moodle_json := session.get("moodle", None)) is dict:
             current_user.moodle = MoodleSyncTesting.from_json(moodle_json)
-            logger.debug(current_user.moodle.courses)
             if current_user.moodle.students is not None:
                 students = current_user.moodle.students.to_html(table_id="datatablesSimple")
+                columns = current_user.moodle.students.columns.to_list()
+                logger.debug(f"columns: {columns}")
         return render_template("create_groups.html", username=current_user.get_id(),
-                               students=students, courses=current_user.moodle.courses)
+                               students=students, courses=current_user.moodle.courses,
+                               columns=columns)
     return redirect(url_for("reporting.login"))
 
 

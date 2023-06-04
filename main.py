@@ -15,7 +15,6 @@ app.register_blueprint(reporting)
 app.register_blueprint(todo)
 app.register_blueprint(create_groups)
 app.secret_key = urandom(12)
-app.config['UPLOAD_FOLDER'] = '/uploads'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_TYPE"] = "sqlalchemy"
