@@ -9,7 +9,6 @@ create_groups = Blueprint("create_groups", __name__)
 
 @create_groups.get("/create-groups")
 def create_groups_get():
-    flash("This feature is not yet implemented", "warning")
     if current_user.get_id() is not None:
         if type(moodle_json := session.get("moodle", None)) is dict:
             current_user.moodle = MoodleSyncTesting.from_json(moodle_json)

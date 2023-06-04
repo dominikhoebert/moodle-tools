@@ -32,22 +32,20 @@ def login_post():
         user.moodle_service = service
         user.login()
         session["moodle"] = user.moodle.to_json()
-        logger.debug("Login success")
-        flash("Login success", "success")
+        flash(f"Logged in as {user.username}", "success")
         return redirect(url_for("index"))
     else:
         db.session.add(moodle_user)
         db.session.commit()
         login_user(moodle_user)
-        logger.debug("Register success")
-        flash("Register success", "success")
+        flash(f"Registered as {user.username}", "success")
         return redirect(url_for("index"))
 
 
 @reporting.route("/logout")
 def logout():
-    logger.debug("Logout request")
     logout_user()
+    flash("Logged out", "success")
     return redirect(url_for("index"))
 
 # @reporting.get("/settings")

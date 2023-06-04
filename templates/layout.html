@@ -122,15 +122,16 @@
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 {% for message in messages %}
-                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="toast-header">
-                        <img src="..." class="rounded me-2" alt="...">
-                        <strong class="me-auto">test</strong>
-                        <small>now</small>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">
-                        {{ message }}
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            <strong class="me-auto">Information</strong>
+                            <small>now</small>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            {{ message }}
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
@@ -164,17 +165,9 @@
 <script src="{{ url_for('static', filename='js/datatables-simple-demo.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
 <script>
-
-    option = {"autohide": true, timeout:1500};
-
-    toastAlert.classList = "toast align-items-center text-white bg-{{category}} border";
-    toasticon.classList = "toast-icon-{{category}}"; <!-- defined in styles.css -->
-    toastBody.innerHTML = "{{ message }}";
-    let toast = new bootstrap.Toast(toastAlert, option);
-    toast.show();
-
-
-
+    $(document).ready(function() {
+            $('.toast').toast('show');
+        });
 </script>
 </body>
 </html>

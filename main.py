@@ -44,8 +44,6 @@ def user_loader(user_id):
 @app.route("/")
 def index():
     if current_user.get_id() is not None:
-        if type(moodle_json := session.get("moodle", None)) is dict:
-            current_user.moodle = MoodleSyncTesting.from_json(moodle_json)
         return render_template("index.html", username=current_user.get_id())
     return render_template("index.html")
 
