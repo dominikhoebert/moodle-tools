@@ -41,12 +41,16 @@
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false">
+                                    {% if course_id is not none %}
+                                    {{ course_id }}
+                                    {% else %}
                                     Select course
+                                    {% endif %}
                                 </button>
                                 <ul class="dropdown-menu">
                                     {% if courses is not none %}
                                     {% for key,value in courses.items() %}
-                                    <li><a class="dropdown-item" href="#">{{value}}</a></li>
+                                    <li><a class="dropdown-item" href="/create-groups/course/{{key}}">{{value}}</a></li>
                                     {% endfor %}
                                     {% endif %}
                                 </ul>
@@ -57,12 +61,17 @@
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false">
+                                    {% if group_column_name is not none %}
+                                    {{ group_column_name }}
+                                    {% else %}
                                     Select groupname column
+                                    {% endif %}
                                 </button>
                                 <ul class="dropdown-menu">
                                     {% if columns is not none %}
                                     {% for col in columns %}
-                                    <li><a class="dropdown-item" href="#">{{col}}</a></li>
+                                    <li><a class="dropdown-item" href="/create-groups/groupname/{{col}}">{{col}}</a>
+                                    </li>
                                     {% endfor %}
                                     {% endif %}
                                 </ul>
@@ -73,12 +82,17 @@
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false">
+                                    {% if column_name is not none %}
+                                    {{ column_name }}
+                                    {% else %}
+                                    Select course
+                                    {% endif %}
                                     Select Email/ID column
                                 </button>
                                 <ul class="dropdown-menu">
                                     {% if columns is not none %}
                                     {% for col in columns %}
-                                    <li><a class="dropdown-item" href="#">{{col}}</a></li>
+                                    <li><a class="dropdown-item" href="/create-groups/column/{{col}}">{{col}}</a></li>
                                     {% endfor %}
                                     {% endif %}
                                 </ul>
