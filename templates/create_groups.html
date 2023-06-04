@@ -37,14 +37,15 @@
                 <form class="row gy-2 gx-3 align-items-center">
                     <div class="row g-3">
                         <div class="col-auto">
+                            <label class="form-label" for="select-course-id">Course</label>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
-                                        aria-expanded="false">
+                                        aria-expanded="false" id="select-course-id">
                                     {% if course_id is not none %}
                                     {{ course_id }}
                                     {% else %}
-                                    Select course
+                                    Select
                                     {% endif %}
                                 </button>
                                 <ul class="dropdown-menu">
@@ -57,14 +58,15 @@
                             </div>
                         </div>
                         <div class="col-auto">
+                            <label class="form-label" for="select-group">Group name column</label>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
-                                        aria-expanded="false">
+                                        aria-expanded="false" id="select-group">
                                     {% if group_column_name is not none %}
                                     {{ group_column_name }}
                                     {% else %}
-                                    Select groupname column
+                                    Select
                                     {% endif %}
                                 </button>
                                 <ul class="dropdown-menu">
@@ -78,16 +80,16 @@
                             </div>
                         </div>
                         <div class="col-auto">
+                            <label class="form-label" for="column-name">Email/Moodle-ID</label>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
-                                        aria-expanded="false">
+                                        aria-expanded="false" id="column-name">
                                     {% if column_name is not none %}
                                     {{ column_name }}
                                     {% else %}
-                                    Select course
+                                    Select
                                     {% endif %}
-                                    Select Email/ID column
                                 </button>
                                 <ul class="dropdown-menu">
                                     {% if columns is not none %}
@@ -101,13 +103,15 @@
                     </div>
                     <div class="row g-3">
                         <div class="col-auto">
-                            <button type="button" class="btn btn-secondary">Enroll missing students</button>
+                            <a class="btn btn-secondary" href="/create-groups/enroll" role="button">Enroll missing
+                                students</a>
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-secondary">Create Groups</button>
+                            <a class="btn btn-secondary" href="/create-groups/create" role="button">Create Groups</a>
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-secondary">Add students to groups</button>
+                            <a class="btn btn-secondary" href="/create-groups/add" role="button">Add students to
+                                groups</a>
                         </div>
                     </div>
                 </form>

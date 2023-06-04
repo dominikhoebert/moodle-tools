@@ -36,7 +36,8 @@ def error401():
 
 @login_manager.user_loader
 def user_loader(user_id):
-    return User.query.get(user_id)
+    #return User.query.get(user_id)
+    return db.session.get(User, user_id)
 
 
 @app.route("/index.html")

@@ -24,6 +24,9 @@ class MoodleSyncTesting(MoodleSync):
         self.group_names_to_id = None
         self.courses = None
 
+    def login(self):
+        super().__init__(self.url, self.username, self.password, self.service)
+
     def __repr__(self):
         return f"MoodleSyncTesting(url={self.url}, username={self.username}, password={self.password}, service=" \
                f"{self.service}, course_id={self.course_id}, students={self.students}, column_name={self.column_name}" \
@@ -41,6 +44,7 @@ class MoodleSyncTesting(MoodleSync):
             "group_column_name": self.group_column_name,
             "group_names_to_id": self.group_names_to_id,
             "courses": self.courses if self.courses is not None else None,
+            "token": self.key
         }
 
     def from_json(json):
@@ -49,6 +53,8 @@ class MoodleSyncTesting(MoodleSync):
                                 json["column_name"], json["group_column_name"])
         mst.group_names_to_id = json["group_names_to_id"]
         mst.courses = json["courses"]
+        mst.key = json["token"]
+        mst.url = json["url"]
         return mst
 
     @property
@@ -69,9 +75,6 @@ class MoodleSyncTesting(MoodleSync):
     def column_name(self, value: str):
         self._column_name = value
         self.right_on = self.get_right_on()
-
-    def login(self):
-        super().__init__(self.url, self.username, self.password, self.service)
 
     def get_right_on(self):
         if self.column_name is not None:

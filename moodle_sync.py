@@ -13,31 +13,31 @@ Install certifi; copy cacert.pem aus certifi folder
 
 class MoodleSync:
     def __init__(self, url: str, username: str, password: str, service: str):
-        moodle_api.URL = url
-        moodle_api.KEY = self.get_token(url, username, password, service)
+        self.url = url
+        self.key = self.get_token(username, password, service)
 
-    def get_token(self, url, username, password, service):
+    def get_token(self, username, password, service):
         obj = {"username": username, "password": password, "service": service}
-        response = requests.post(url + "/login/token.php", data=obj)
+        response = requests.post(self.url + "/login/token.php", data=obj)
         response = response.json()
         return response['token']
 
     def create_group(self, groups: list):
         """ Creates a group in moodle with the given name and adds the given students to it. """
-        response = moodle_api.call('core_group_create_groups', groups=groups)
+        response = moodle_api.call('core_group_create_groups', self.url, self.key, groups=groups)
         return response
 
     def add_students_to_group(self, members: list):
         """ Adds the given students to the given group. """
-        response = moodle_api.call('core_group_add_group_members', members=members)
+        response = moodle_api.call('core_group_add_group_members', self.url, self.key, members=members)
         return response
 
     def get_recent_courses(self):
-        response = moodle_api.call('core_course_get_recent_courses')
+        response = moodle_api.call('core_course_get_recent_courses', self.url, self.key)
         return {c['id']: c['fullname'] for c in response}
 
     def get_course_modules(self, course_id):
-        response = moodle_api.call('core_course_get_contents', courseid=course_id)
+        response = moodle_api.call('core_course_get_contents', self.url, self.key, courseid=course_id)
         modules = {}
         for section in response:
             for module in section['modules']:
@@ -47,7 +47,7 @@ class MoodleSync:
         return modules
 
     def get_gradereport_of_course(self, course_id):
-        response = moodle_api.call('gradereport_user_get_grade_items', courseid=course_id)
+        response = moodle_api.call('gradereport_user_get_grade_items', self.url, self.key, courseid=course_id)
         graditems = {}
         for graditem in response['usergrades'][0]['gradeitems']:
             graditems[graditem['itemname']] = graditem['id']
@@ -66,7 +66,7 @@ class MoodleSync:
     def get_enrolled_students(self, course_id):
         """
         Returns a DataFrame with user info id, fullname, email, groups (all groups as joined str)"""
-        response = moodle_api.call('core_enrol_get_enrolled_users', courseid=course_id)
+        response = moodle_api.call('core_enrol_get_enrolled_users', self.url, self.key, courseid=course_id)
         new_rows = []
         for student in response:
             new_rows.append([student["id"], student["firstname"], student["lastname"], student["email"]])
@@ -82,7 +82,7 @@ class MoodleSync:
         :param userlist:
         :return DataFrame:
         """
-        response = moodle_api.call('core_user_get_course_user_profiles', userlist=userlist)
+        response = moodle_api.call('core_user_get_course_user_profiles', self.url, self.key, userlist=userlist)
         user_df = pd.DataFrame(columns=['id', 'fullname', 'email', 'groups'])
         for student in response:
             groups_list = []
@@ -99,11 +99,11 @@ class MoodleSync:
 
     def enroll_students(self, enrolments: list):
         """ Enrolls the given students in the given course. """
-        r = moodle_api.call('enrol_manual_enrol_users', enrolments=enrolments)
+        r = moodle_api.call('enrol_manual_enrol_users', self.url, self.key, enrolments=enrolments)
         return r
 
     def get_user_by_email(self, emails: list):
-        response = moodle_api.call('core_user_get_users_by_field', field="email", values=emails)
+        response = moodle_api.call('core_user_get_users_by_field', self.url, self.key, field="email", values=emails)
         return response
 
 
