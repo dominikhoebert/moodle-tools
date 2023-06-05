@@ -9,14 +9,14 @@ from models import logger
 
 class MoodleSyncTesting(MoodleSync):
     def __init__(self, url: str, username: str, password: str, service: str, course_id: int, students: DataFrame,
-                 column_name: str, group_column_name: str):
+                 column_name: str, group_column_name: str, students_original: DataFrame = None):
         self.url = url
         self.username = username
         self.password = password
         self.service = service
         self.course_id = course_id
         self._students = None
-        self.students_original = None
+        self.students_original = students_original
         self.students = students
         self.right_on = None
         self.column_name = column_name
@@ -39,6 +39,7 @@ class MoodleSyncTesting(MoodleSync):
             "password": self.password,
             "service": self.service,
             "course_id": self.course_id,
+            "students_original": self.students_original.to_json() if self.students_original is not None else None,
             "students": self.students.to_json() if self.students is not None else None,
             "column_name": self.column_name,
             "group_column_name": self.group_column_name,
@@ -50,7 +51,9 @@ class MoodleSyncTesting(MoodleSync):
     def from_json(json):
         mst = MoodleSyncTesting(json["url"], json["username"], json["password"], json["service"], json["course_id"],
                                 pd.read_json(json["students"]) if json["students"] is not None else None,
-                                json["column_name"], json["group_column_name"])
+                                json["column_name"], json["group_column_name"],
+                                students_original=pd.read_json(json["students_original"]) if json[
+                                                                                                 "students_original"] is not None else None)
         mst.group_names_to_id = json["group_names_to_id"]
         mst.courses = json["courses"]
         mst.key = json["token"]
@@ -63,7 +66,7 @@ class MoodleSyncTesting(MoodleSync):
 
     @students.setter
     def students(self, value: DataFrame):
-        if self._students is None:
+        if self.students_original is None:
             self.students_original = value
         self._students = value
 
@@ -79,13 +82,13 @@ class MoodleSyncTesting(MoodleSync):
     def get_right_on(self):
         if self.column_name is not None:
             if self.is_id_column():
-                logger.debug("Column Name detected as ID")
+                # logger.debug("Column Name detected as ID")
                 return "id_joined"
             elif self.is_email_column():
-                logger.debug("Column Name detected as Email")
+                # logger.debug("Column Name detected as Email")
                 return "email_joined"
             else:
-                logger.debug("Column Name could not be detected as ID or Email")
+                # logger.debug("Column Name could not be detected as ID or Email")
                 return None
 
     def join_enrolled_students(self):
@@ -145,8 +148,11 @@ class MoodleSyncTesting(MoodleSync):
         logger.debug("Students in groups:")
         logger.debug(self.count_students_in_groups())
 
+    def get_not_enrolled_students(self):
+        return self.students[self.students["id_joined"].isnull()]
+
     def enroll_students_for_groups(self):
-        not_enrolled_df = self.students[self.students["id_joined"].isnull()]
+        not_enrolled_df = self.get_not_enrolled_students()
         if len(not_enrolled_df) > 0:
             if self.right_on == 'id_joined':
                 not_enrolled_ids = not_enrolled_df[self.column_name].tolist()

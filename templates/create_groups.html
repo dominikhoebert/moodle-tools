@@ -103,15 +103,29 @@
                     </div>
                     <div class="row g-3">
                         <div class="col-auto">
+                            {% if course_id is none or column_name is none %}
+                            <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Enroll missing
+                                students</a>
+                            {% else %}
                             <a class="btn btn-secondary" href="/create-groups/enroll" role="button">Enroll missing
                                 students</a>
+                            {% endif %}
                         </div>
                         <div class="col-auto">
+                            {% if course_id is none or column_name is none or columns is none %}
+                            <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Create Groups</a>
+                            {% else %}
                             <a class="btn btn-secondary" href="/create-groups/create" role="button">Create Groups</a>
+                            {% endif %}
                         </div>
                         <div class="col-auto">
+                            {% if group_names is none %}
+                            <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Add students to
+                                groups</a>
+                            {% else %}
                             <a class="btn btn-secondary" href="/create-groups/add" role="button">Add students to
                                 groups</a>
+                            {% endif %}
                         </div>
                     </div>
                 </form>
@@ -140,9 +154,11 @@
                 Groups Preview
             </div>
             <div class="card-body">
-                {% if groups_preview is not none %}
-                {{ groups_preview|safe }}
-                {% endif %}
+                <div class="col-xl-4">
+                    {% if groups_preview is not none %}
+                    {{ groups_preview|safe }}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
