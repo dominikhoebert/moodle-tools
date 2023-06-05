@@ -14,10 +14,10 @@ class MoodleSyncTesting(MoodleSync):
         self.username = username
         self.password = password
         self.service = service
-        self._students = None
         self.course_id = course_id
+        self._students = None
+        self.students_original = None
         self.students = students
-        self.students_original = students
         self.right_on = None
         self.column_name = column_name
         self.group_column_name = group_column_name
@@ -138,9 +138,12 @@ class MoodleSyncTesting(MoodleSync):
 
         self.add_students_to_group(members)
 
+    def count_students_in_groups(self):
+        return self.students.groupby(self.group_column_name).count()[self.students.columns[0]]
+
     def log_count_students_in_groups(self):
         logger.debug("Students in groups:")
-        logger.debug(self.students.groupby(self.group_column_name).count()[self.students.columns[0]])
+        logger.debug(self.count_students_in_groups())
 
     def enroll_students_for_groups(self):
         not_enrolled_df = self.students[self.students["id_joined"].isnull()]

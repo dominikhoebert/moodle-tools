@@ -26,22 +26,32 @@ def get_moodle():
     return None
 
 
+def color_html_table(html: str, find_str: str, tag: str):
+    pos = html.find(find_str)
+    html = html[:pos] + tag + html[pos:]
+    return html
+
+
 @create_groups.get("/")
 def create_groups_get():
     students = None
     columns = None
     course_name = None
+    groups = None
     if current_user.get_id() is not None:
         if get_moodle() is not None:
             if current_user.moodle.students is not None:
-                students = current_user.moodle.students.to_html(table_id="datatablesSimple")
+                students = current_user.moodle.students_original.to_html(table_id="datatablesSimple")
                 columns = current_user.moodle.students.columns.to_list()
             if current_user.moodle.course_id is not None:
                 course_name = current_user.moodle.courses[current_user.moodle.course_id]
                 if current_user.moodle.group_column_name is not None:
                     # color students preview column
+                    students = color_html_table(students, ">" + current_user.moodle.group_column_name,
+                                                ' class="table-warning"')
                     # create groups preview
-                    ...
+                    groups = current_user.moodle.count_students_in_groups()
+                    groups = pd.DataFrame(groups).reset_index().to_html(classes="table")
                 if current_user.moodle.column_name is not None:
                     # color students preview column
                     # activate enroll missing students button
@@ -57,7 +67,7 @@ def create_groups_get():
                                students=students, courses=current_user.moodle.courses,
                                columns=columns, course_id=course_name,
                                group_column_name=current_user.moodle.group_column_name,
-                               column_name=current_user.moodle.column_name)
+                               column_name=current_user.moodle.column_name, groups_preview=groups)
     return redirect(url_for("reporting.login"))
 
 
@@ -82,6 +92,9 @@ def file_upload():
 
         if get_moodle() is not None:
             current_user.moodle.students = df
+            current_user.moodle.column_name = None  # reset column names
+            current_user.moodle.group_column_name = None  # reset group column names
+            current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
 
         return redirect(url_for('create_groups.create_groups_get'))
@@ -92,6 +105,7 @@ def course(course_id):
     if course_id is not None and course_id != 0:
         if get_moodle() is not None:
             current_user.moodle.course_id = course_id
+            current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
     return redirect(url_for('create_groups.create_groups_get'))
 
@@ -102,6 +116,7 @@ def column(column_name):
         if get_moodle() is not None:
             logger.debug("success")
             current_user.moodle.column_name = column_name
+            current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
     return redirect(url_for('create_groups.create_groups_get'))
 
@@ -111,6 +126,7 @@ def groupname(group_column_name):
     if group_column_name is not None and group_column_name != "":
         if get_moodle() is not None:
             current_user.moodle.group_column_name = group_column_name
+            current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
     return redirect(url_for('create_groups.create_groups_get'))
 

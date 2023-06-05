@@ -140,6 +140,9 @@
                 Groups Preview
             </div>
             <div class="card-body">
+                {% if groups_preview is not none %}
+                {{ groups_preview|safe }}
+                {% endif %}
             </div>
         </div>
     </div>
