@@ -22,7 +22,6 @@ def login_post():
                            moodle_service=service)
         moodle_user.login()
     except KeyError:
-        logger.debug("Moodle Login failed")
         return redirect(url_for("error401"))
     user = User.query.filter_by(username=username).first()
     if user:
@@ -31,14 +30,15 @@ def login_post():
         user.moodle_url = url
         user.moodle_service = service
         user.login()
-        session["moodle"] = user.moodle.to_json()
         flash(f"Logged in as {user.username}", "success")
+        session["moodle"] = user.moodle.to_json()
         return redirect(url_for("index"))
     else:
         db.session.add(moodle_user)
         db.session.commit()
         login_user(moodle_user)
-        flash(f"Registered as {user.username}", "success")
+        flash(f"Registered as {moodle_user.username}", "success")
+        session["moodle"] = moodle_user.moodle.to_json()
         return redirect(url_for("index"))
 
 

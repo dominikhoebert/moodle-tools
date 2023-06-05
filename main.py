@@ -1,18 +1,14 @@
 from os import urandom
 
-from flask import Flask, render_template, request, redirect, url_for, session
-from flask_login import current_user
+from flask import Flask, render_template, redirect, url_for
 
 from user import User
 from user_management import reporting
-from todo import todo
 from create_groups import create_groups
 from models import db, login_manager, logger, sess
-from moodle_sync_testing import MoodleSyncTesting
 
 app = Flask(__name__)
 app.register_blueprint(reporting)
-app.register_blueprint(todo)
 app.register_blueprint(create_groups)
 app.secret_key = urandom(12)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
@@ -36,7 +32,6 @@ def error401():
 
 @login_manager.user_loader
 def user_loader(user_id):
-    #return User.query.get(user_id)
     return db.session.get(User, user_id)
 
 
@@ -44,9 +39,10 @@ def user_loader(user_id):
 @app.route("/index")
 @app.route("/")
 def index():
-    if current_user.get_id() is not None:
-        return render_template("index.html", username=current_user.get_id())
-    return render_template("index.html")
+    # if current_user.get_id() is not None:
+    #     return render_template("index.html", username=current_user.get_id())
+    # return render_template("index.html")
+    return redirect(url_for("create_groups.create_groups_get"))
 
 
 if __name__ == "__main__":
