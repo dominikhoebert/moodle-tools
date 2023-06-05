@@ -42,7 +42,7 @@ def create_groups_get():
         if get_moodle() is not None:
             if current_user.moodle.students is not None:
                 students = current_user.moodle.students_original.to_html(table_id="datatablesSimple")
-                columns = current_user.moodle.students.columns.to_list()
+                columns = current_user.moodle.students_original.columns.to_list()
             if current_user.moodle.course_id is not None:
                 course_name = current_user.moodle.courses[current_user.moodle.course_id]
                 if current_user.moodle.group_column_name is not None:
@@ -144,7 +144,7 @@ def create():
         current_user.moodle.clean_students()
         current_user.moodle.create_groups()
         session["moodle"] = current_user.moodle.to_json()
-        flash("xxx Groups created")  # TODO: add number of groups
+        flash(f"{len(current_user.moodle.group_names_to_id)} Groups created")
     return redirect(url_for('create_groups.create_groups_get'))
 
 
@@ -153,5 +153,5 @@ def add():
     if get_moodle() is not None:
         current_user.moodle.add_students_to_groups()
         session["moodle"] = current_user.moodle.to_json()
-        flash("xxx Students added to xxx groups")  # TODO: add number of students
+        flash("Students added to groups")
     return redirect(url_for('create_groups.create_groups_get'))
