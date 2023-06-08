@@ -16,7 +16,7 @@ First a CSV or Excel file has to be uploaded (file will not be saved on the apps
 Target course can be chosen, table columns for groupnames and students email/moodle-id can be selected.
 Then missing students can be automatically enrolled into the course. Groups can be created and students added to them.
 
-![Create Groups](screenshots/Screenshot Create Groups - Moodle Tools.png)
+![Create Groups](screenshots/screenshot_create_groups.png)
 
 ## Errors
 
