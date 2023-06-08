@@ -47,7 +47,7 @@
                                                         <label for="moodle_url">Moodle URL</label>
                                                         <input name="moodle_url" class="form-control" id="moodle_url"
                                                                placeholder="Enter URL"
-                                                               value="https://elearning.tgm.ac.at">
+                                                               value="{{ moodle_url }}">
                                                         <small id="url_help" class="form-text text-muted">Change if you
                                                             want to use a different Moodle
                                                             plattform</small>
@@ -56,7 +56,7 @@
                                                         <label for="moodle_service">Moodle Service</label>
                                                         <input name="moodle_service" class="form-control"
                                                                id="moodle_service" placeholder="Enter Service Name"
-                                                               value="tgm_hoedmoodlesync">
+                                                               value="{{ moodle_service }}">
                                                         <small id="service_help" class="form-text text-muted">Service
                                                             must exist on Moodle plattform (ask you
                                                             moodle administrator)</small>

@@ -1,5 +1,5 @@
 from user import User
-from models import db, logger
+from models import db, logger, env
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from flask_login import current_user, login_user, logout_user
 
@@ -8,7 +8,7 @@ reporting = Blueprint("reporting", __name__)
 
 @reporting.get("/login")
 def login():
-    return render_template("login.html")
+    return render_template("login.html", moodle_url=env.default_moodle_url, moodle_service=env.default_moodle_service)
 
 
 @reporting.post("/login")

@@ -117,4 +117,3 @@ if __name__ == "__main__":
     password = credentials["password"]
     service = credentials["service"]
     ms = MoodleSync(url, username, password, service)
-    print(ms.get_user_by_email(["dhoebert@tgm.ac.at"]))
