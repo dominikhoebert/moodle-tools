@@ -48,7 +48,7 @@ Contact your moodle administrator for a moodle service including following web s
 ## TODO
 
 - ~~EXPOSE 5000~~
-- Remove password from session
+- ~~Remove password from session~~
 - ~~Environment variables for standart values: moodle_url, moodle_service~~
 - ~~add screenshots to readme~~
 - preview table

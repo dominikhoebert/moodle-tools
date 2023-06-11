@@ -18,18 +18,16 @@ def login_post():
     url = request.form.get("moodle_url")
     service = request.form.get("moodle_service")
     try:
-        moodle_user = User(username=username, password=password, moodle_url=url,
-                           moodle_service=service)
-        moodle_user.login()
+        moodle_user = User(username=username, moodle_url=url, moodle_service=service)
+        moodle_user.login(password)
     except KeyError:
         return redirect(url_for("error401"))
     user = User.query.filter_by(username=username).first()
     if user:
         login_user(user)
-        user.password = password
         user.moodle_url = url
         user.moodle_service = service
-        user.login()
+        user.login(password)
         flash(f"Logged in as {user.username}", "success")
         session["moodle"] = user.moodle.to_json()
         return redirect(url_for("index"))

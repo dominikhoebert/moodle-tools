@@ -6,16 +6,15 @@ class User(db.Model):
     __tablename__ = 'user'
 
     username = db.Column(db.String, primary_key=True)
-    password = None
     authenticated = db.Column(db.Boolean, default=False)
     moodle_url = None
     moodle_service = None
     moodle = None
 
-    def login(self):
-        self.moodle = MoodleSyncTesting(self.moodle_url, self.username, self.password, self.moodle_service, None, None,
+    def login(self, password):
+        self.moodle = MoodleSyncTesting(self.moodle_url, self.username, self.moodle_service, None, None,
                                         None, None)
-        self.moodle.login()
+        self.moodle.login(password)
         self.moodle.courses = self.moodle.get_recent_courses()
 
     def is_active(self):
