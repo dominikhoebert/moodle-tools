@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}App{% endblock %}
+{% block content %}
+<h1>App</h1>
+<div id="test">
+    <a class="btn btn-secondary" onclick="fn(2)" role="button">Click</a>
+
+</div>
+
+
+<script>
+
+    function fn(val) {
+        console.log(val)
+        const test_div = document.getElementById("test")
+        const room_url = {{ url_for("fetch")|tojson }}
+        fetch(room_url)
+        .then(response => response.json())
+        .then(data => cb(data))
+<!--        .then(data => {-->
+<!--            console.log(data)-->
+<!--            test_div.innerHTML = data["message"]-->
+<!--        })-->
+    }
+
+    function cb(data) {
+        console.log(data)
+        const test_div = document.getElementById("test")
+        test_div.innerHTML = data["message"]
+    }
+
+</script>
+
+{% endblock %}
