@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.register_blueprint(reporting)
 app.register_blueprint(create_groups)
 app.secret_key = urandom(12)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
+app.config["SQLALCHEMY_DATABASE_URI"] = env.db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db
@@ -50,6 +50,7 @@ if __name__ == "__main__":
     logger.debug(f"Host: {env.host}")
     logger.debug(f"Default Moodle URL: {env.default_moodle_url}")
     logger.debug(f"Default Moodle Service: {env.default_moodle_service}")
+    logger.debug(f"DB URI: {env.db_uri}")
 
     with app.app_context():
         db.create_all()

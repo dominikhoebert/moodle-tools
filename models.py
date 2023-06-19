@@ -19,5 +19,15 @@ class environ():
         self.default_moodle_url = getenv("DEFAULT_MOODLE_URL", "")
         self.default_moodle_service = getenv("DEFAULT_MOODLE_SERVICE", "")
 
+        self.db_user = getenv("DB_USER", None)
+        self.db_password = getenv("DB_PASSWORD", None)
+        self.db_host = getenv("DB_HOST", "localhost")
+        self.db_port = getenv("DB_PORT", "3306")
+
+        if self.db_user is not None and self.db_password is not None:
+            self.db_uri = f"mysql+mysqlconnector://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/moodle_tools"
+        else:
+            self.db_uri = "sqlite:///db.sqlite"
+
 
 env = environ()

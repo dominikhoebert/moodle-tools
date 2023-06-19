@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: mariadb
+    container_name: mariadb
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+      MARIADB_DATABASE: moodle_tools
+    volumes:
+      - ./mysql:/var/lib/mysql
+
+  app:
+    image: dominik1220/moodle-tools
+    container_name: app
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    environment:
+      DB_USER: root
+      DB_PASSWORD: example
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DEFAULT_MOODLE_SERVICE: service_name
+      DEFAULT_MOODLE_URL: https://moodle.school.com
+      DEBUG: true
+      HOST: 0.0.0.0
+    depends_on:
+      - db

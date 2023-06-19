@@ -5,7 +5,7 @@ from moodle_sync_testing import MoodleSyncTesting
 class User(db.Model):
     __tablename__ = 'user'
 
-    username = db.Column(db.String, primary_key=True)
+    username = db.Column(db.String(255), primary_key=True)
     authenticated = db.Column(db.Boolean, default=False)
     moodle_url = None
     moodle_service = None

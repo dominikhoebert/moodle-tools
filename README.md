@@ -33,6 +33,8 @@ login helps.
 
 [http://localhost:5000](http://localhost:5000)
 
+### [Docker Compose](docker-compose.yml)
+
 ## Moodle API
 
 Contact your moodle administrator for a moodle service including following web services:
@@ -48,8 +50,8 @@ Contact your moodle administrator for a moodle service including following web s
 ## TODO
 
 - use ajax https://flask.palletsprojects.com/en/2.3.x/patterns/javascript/
-- ENV for mysql instead of sqlite
-  - Dockercompose
+- ~~ENV for mysql instead of sqlite~~
+  - ~~Dockercompose~~
 - ~~EXPOSE 5000~~
 - ~~Remove password from session~~
 - ~~Environment variables for standart values: moodle_url, moodle_service~~
@@ -58,6 +60,7 @@ Contact your moodle administrator for a moodle service including following web s
     - color selected columns
     - color missing students
 - ~~add session timeout~~
+- add TLS reverse proxy
 - add tool notify
 - add tool upload
 - add tool aggregate
@@ -66,4 +69,4 @@ Contact your moodle administrator for a moodle service including following web s
   with an invalid value will be treated as “Lax”. This means that the cookie will no longer be sent in third-party
   contexts. If your application depends on this cookie being available in such contexts, please add the “SameSite=None“
   attribute to it. To know more about the “SameSite“ attribute,
-  read https://developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+  read https://developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie/SameSite (HTTPS?)
