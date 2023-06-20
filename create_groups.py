@@ -103,7 +103,8 @@ def course(course_id):
             current_user.moodle.course_id = course_id
             current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
-    return redirect(url_for('create_groups.create_groups_get'))
+    # return redirect(url_for('create_groups.create_groups_get'))
+    return {"message": "test"}
 
 
 @create_groups.route("/column/<column_name>")

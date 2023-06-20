@@ -51,7 +51,8 @@
                                 <ul class="dropdown-menu">
                                     {% if courses is not none %}
                                     {% for key,value in courses.items() %}
-                                    <li><a class="dropdown-item" href="/create-groups/course/{{key}}">{{value}}</a></li>
+<!--                                    <li><a class="dropdown-item" href="/create-groups/course/{{key}}">{{value}}</a></li>-->
+                                    <li><a class="dropdown-item" onclick="course({{key}})">{{value}}</a></li>
                                     {% endfor %}
                                     {% endif %}
                                 </ul>
@@ -163,11 +164,16 @@
         </div>
     </div>
 </div>
-
 <script>
+    function course(course_id) {
+        console.log(course_id)
+        fetch("/create-groups/course/" + course_id)
+        .then(response => response.json())
+        .then(data => parse_response(data))
+    }
 
-
+    function parse_response(response) {
+        console.log(response);
+    }
 </script>
-
-
 {% endblock %}

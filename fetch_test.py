@@ -7,6 +7,7 @@ app = Flask(__name__)
 def index():
     return render_template("fetch_test.html")
 
+
 @app.route("/fetch")
 def fetch():
     return {"message": "Hello, World!"}
