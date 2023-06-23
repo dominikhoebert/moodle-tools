@@ -50,7 +50,7 @@ def create_groups_get():
                     students = color_html_table(students, ">" + current_user.moodle.group_column_name,
                                                 ' class="table-warning"')
                     # create groups preview
-                    groups = current_user.moodle.count_students_in_groups()
+                    groups = current_user.moodle.count_students_in_groups()  # TODO error when wrong column name
                     groups = pd.DataFrame(groups).reset_index().rename(columns={'name': 'Students'}).to_html(
                         classes="table table-striped table-hover", justify="left")
                 if current_user.moodle.column_name is not None:
@@ -58,12 +58,42 @@ def create_groups_get():
                     # TODO color students preview missing students rows
                     ...
         return render_template("create_groups.html", username=current_user.get_id(),
-                               students=students, courses=current_user.moodle.courses,
-                               columns=columns, course_id=course_name,
-                               group_column_name=current_user.moodle.group_column_name,
-                               column_name=current_user.moodle.column_name, groups_preview=groups,
+                               students=students, courses=None,
+                               columns=columns, course_id=None,
+                               group_column_name=None,
+                               column_name=None, groups_preview=groups,
                                group_names=current_user.moodle.group_names_to_id)
     return redirect(url_for("reporting.login"))
+
+
+def create_response(moodle: MoodleSyncTesting):
+    response = dict()
+    if moodle.course_id is not None:
+        response['course_name'] = moodle.courses[current_user.moodle.course_id]
+    if moodle.courses is not None:
+        courses_html = ""
+        for course_id, course_name in moodle.courses.items():
+            courses_html += f'<li><a class="dropdown-item" onclick="course({course_id})">{course_name}</a></li>'
+        response['courses'] = courses_html
+    if moodle.students is not None:
+        response['students'] = moodle.students.to_html(table_id="datatablesSimple")  # TODO to html?
+        response['columns'] = moodle.students.columns.to_list()  # TODO to html
+    if moodle.group_column_name is not None:
+        response['group_column_name'] = moodle.group_column_name
+    if moodle.column_name is not None:
+        response['column_name'] = moodle.column_name
+    if moodle.group_names_to_id is not None:
+        response['group_names'] = moodle.group_names_to_id
+
+    return response
+
+
+@create_groups.route("/get_all")
+def get_all():
+    if current_user.get_id() is not None:
+        if get_moodle() is not None:
+            return create_response(current_user.moodle)
+    return redirect(url_for("reporting.login"))  # TODO error message?
 
 
 @create_groups.post("/file-upload")
@@ -103,8 +133,9 @@ def course(course_id):
             current_user.moodle.course_id = course_id
             current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
+            return create_response(current_user.moodle)
+    return {"Error", "while selecting course"}
     # return redirect(url_for('create_groups.create_groups_get'))
-    return {"message": "test"}
 
 
 @create_groups.route("/column/<column_name>")
@@ -114,7 +145,9 @@ def column(column_name):
             current_user.moodle.column_name = column_name
             current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
-    return redirect(url_for('create_groups.create_groups_get'))
+            return create_response(current_user.moodle)
+    return {"Error", "while selecting course"}
+    # return redirect(url_for('create_groups.create_groups_get'))
 
 
 @create_groups.route("/groupname/<group_column_name>")
@@ -124,7 +157,9 @@ def groupname(group_column_name):
             current_user.moodle.group_column_name = group_column_name
             current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
-    return redirect(url_for('create_groups.create_groups_get'))
+            return create_response(current_user.moodle)
+    return {"Error", "while selecting course"}
+    # return redirect(url_for('create_groups.create_groups_get'))
 
 
 @create_groups.route("/enroll")

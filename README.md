@@ -50,6 +50,8 @@ Contact your moodle administrator for a moodle service including following web s
 ## TODO
 
 - use ajax https://flask.palletsprojects.com/en/2.3.x/patterns/javascript/
+- add students to already existing groups
+- flash toasts ajax
 - ~~ENV for mysql instead of sqlite~~
   - ~~Dockercompose~~
 - ~~EXPOSE 5000~~

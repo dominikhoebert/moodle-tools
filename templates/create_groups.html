@@ -48,10 +48,10 @@
                                     Select
                                     {% endif %}
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu" id="select-course-list">
                                     {% if courses is not none %}
                                     {% for key,value in courses.items() %}
-<!--                                    <li><a class="dropdown-item" href="/create-groups/course/{{key}}">{{value}}</a></li>-->
+                                    <!--                                    <li><a class="dropdown-item" href="/create-groups/course/{{key}}">{{value}}</a></li>-->
                                     <li><a class="dropdown-item" onclick="course({{key}})">{{value}}</a></li>
                                     {% endfor %}
                                     {% endif %}
@@ -70,10 +70,12 @@
                                     Select
                                     {% endif %}
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu" id="select-group-list">
                                     {% if columns is not none %}
                                     {% for col in columns %}
-                                    <li><a class="dropdown-item" href="/create-groups/groupname/{{col}}">{{col}}</a>
+<!--                                    <li><a class="dropdown-item" href="/create-groups/groupname/{{col}}">{{col}}</a>-->
+<!--                                    </li>-->
+                                    <li><a class="dropdown-item" onclick="group_name('{{col}}')" >{{col}}</a>
                                     </li>
                                     {% endfor %}
                                     {% endif %}
@@ -92,10 +94,11 @@
                                     Select
                                     {% endif %}
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu" id="column-name-list">
                                     {% if columns is not none %}
                                     {% for col in columns %}
-                                    <li><a class="dropdown-item" href="/create-groups/column/{{col}}">{{col}}</a></li>
+<!--                                    <li><a class="dropdown-item" href="/create-groups/column/{{col}}">{{col}}</a></li>-->
+                                    <li><a class="dropdown-item" onclick="column_name('{{col}}')" >{{col}}</a></li>
                                     {% endfor %}
                                     {% endif %}
                                 </ul>
@@ -166,14 +169,56 @@
 </div>
 <script>
     function course(course_id) {
-        console.log(course_id)
         fetch("/create-groups/course/" + course_id)
         .then(response => response.json())
         .then(data => parse_response(data))
     }
 
-    function parse_response(response) {
-        console.log(response);
+    function column_name(name) {
+        fetch("/create-groups/column/" + name)
+        .then(response => response.json())
+        .then(data => parse_response(data))
     }
+
+    function group_name(name) {
+        fetch("/create-groups/groupname/" + name)
+        .then(response => response.json())
+        .then(data => parse_response(data))
+    }
+
+    function parse_response(response) {
+        for (let [key, value] of Object.entries(response)) {
+            if(key=="course_name") {
+                document.getElementById("select-course-id").innerHTML = value
+            }
+            if(key=="Error") {
+                console.log(key, value)
+            }
+            if(key=="courses") {
+                document.getElementById("select-course-list").innerHTML = value
+            }
+            if(key=="group_column_name") {
+                document.getElementById("select-group").innerHTML = value
+            }
+            if(key=="column_name") {
+                document.getElementById("column-name").innerHTML = value
+            }
+            if(key=="column_name") {
+                document.getElementById("column-name-list").innerHTML = value
+            }
+            if(key=="group_name") {
+                document.getElementById("select-group-list").innerHTML = value
+            }
+        }
+    }
+
+    function get_all() {
+        fetch("/create-groups/get_all")
+        .then(response => response.json())
+        .then(data => parse_response(data))
+    }
+
+    get_all()
+
 </script>
 {% endblock %}
