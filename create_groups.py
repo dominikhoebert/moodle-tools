@@ -61,6 +61,10 @@ def create_groups_get():
     return redirect(url_for("reporting.login"))
 
 
+def ajax_flash(message: str):
+    return {'flash': toast_html.replace("{{message}}", message)}
+
+
 def create_response(moodle: MoodleSyncTesting):
     response = dict()
     if moodle.course_id is not None:
@@ -111,42 +115,19 @@ def get_all():
     return redirect(url_for("reporting.login"))  # TODO error message?
 
 
-@create_groups.post("/file")
-def file():
-    if 'file' not in request.files:
-        print('No file part')
-        return {"Error": "No file part"}
-    file = request.files.get('file')
-    if file.filename == '':
-        print('No selected file')
-        return {"Error": "No selected file"}
-    if file and allowed_file(file.filename):
-        print(file.filename)
-        print(file.content_type)
-        print(file.mimetype)
-        print(file.stream)
-        print(file.read())
-        return {"Error": "Success File received"}
-
-
 @create_groups.post("/file-upload")
 def file_upload():
     if 'file' not in request.files:
-        flash('No file part')
-        return redirect(url_for('create_groups.create_groups_get'))
+        return ajax_flash("No file part")
     file = request.files.get('file')
     if file.filename == '':
-        flash('No selected file')
-        return redirect(url_for('create_groups.create_groups_get'))
+        return ajax_flash("No selected file")
     if file and allowed_file(file.filename):
         file.seek(0)
         if file.filename.endswith(".csv"):
             df = pd.read_csv(io.BytesIO(file.read()))
         elif file.filename.endswith(".xlsx") or file.filename.endswith(".xls"):
             df = pd.read_excel(file.read())
-        else:
-            flash("File type not supported")
-            return redirect(url_for('create_groups.create_groups_get'))
 
         if get_moodle() is not None:
             current_user.moodle.students_original = None
@@ -156,7 +137,8 @@ def file_upload():
             current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
 
-        return redirect(url_for('create_groups.create_groups_get'))
+        return create_response(current_user.moodle)
+    return ajax_flash("File type not supported")
 
 
 @create_groups.route("/course/<int:course_id>")

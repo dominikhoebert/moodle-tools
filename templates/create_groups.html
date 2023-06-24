@@ -12,38 +12,18 @@
                 <i class="fa-solid fa-file-arrow-up"></i>
                 Table File Upload
             </div>
-            <form action="/create-groups/file-upload" method="post" enctype=multipart/form-data>
-                <div class="card-body">
-                    <label class="form-label" for="customFile">Upload CSV or Excel File with Students and Groups</label>
-                    <div class="row g-3">
-                        <div class="col-auto">
-                            <input name="file" type="file" class="form-control" id="customFile"/>
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary">Upload</button>
-                        </div>
+            <!--            <form action="/create-groups/file-upload" method="post" enctype=multipart/form-data>-->
+            <div class="card-body">
+                <label class="form-label" for="fileupload">Upload CSV or Excel File with Students and Groups</label>
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <input name="fileupload" type="file" class="form-control" id="fileupload"/>
+                    </div>
+                    <div class="col-auto">
+                        <button onclick="uploadFile()" class="btn btn-primary" id="upload-button">Upload</button>
                     </div>
                 </div>
-            </form>
-            <!-- HTML5 Input Form Elements -->
-            <input id="fileupload" type="file" name="fileupload"/>
-            <button id="upload-button" onclick="uploadFile()"> Upload</button>
-
-            <!-- Ajax JavaScript File Upload Logic -->
-            <script>
-  async function uploadFile() {
-  let formData = new FormData();
-  formData.append("file", fileupload.files[0]);
-  await fetch('/create-groups/file', {
-    method: "POST",
-    body: formData
-  }).then(response => response.json())
-        .then(data => parse_response(data));
-  alert('The file has been uploaded successfully.');
-  }
-
-
-            </script>
+            </div>
         </div>
     </div>
     <div class="col-xl-6">
@@ -135,6 +115,16 @@
     </div>
 </div>
 <script>
+    async function uploadFile() {
+      let formData = new FormData();
+      formData.append("file", fileupload.files[0]);
+      await fetch('/create-groups/file-upload', {
+        method: "POST",
+        body: formData
+      }).then(response => response.json())
+            .then(data => parse_response(data));
+    }
+
     function toast(message) {
         document.getElementById("flash-toast").innerHTML = message
         flash_toast()
@@ -186,11 +176,6 @@
     }
 
     get_all()
-
-
-
-
-
 
 </script>
 {% endblock %}
