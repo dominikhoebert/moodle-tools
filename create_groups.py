@@ -12,6 +12,8 @@ create_groups = Blueprint("create_groups", __name__, url_prefix="/create-groups"
 
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
 
+toast_html = open("templates/toast.html", "r").read()
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -47,8 +49,6 @@ def create_groups_get():
                 course_name = current_user.moodle.courses[current_user.moodle.course_id]
                 if current_user.moodle.group_column_name is not None:
                     # color students preview column
-                    students = color_html_table(students, ">" + current_user.moodle.group_column_name,
-                                                ' class="table-warning"')
                     # create groups preview
                     groups = current_user.moodle.count_students_in_groups()  # TODO error when wrong column name
                     groups = pd.DataFrame(groups).reset_index().rename(columns={'name': 'Students'}).to_html(
@@ -57,33 +57,48 @@ def create_groups_get():
                     # TODO color students preview column
                     # TODO color students preview missing students rows
                     ...
-        return render_template("create_groups.html", username=current_user.get_id(),
-                               students=students, courses=None,
-                               columns=columns, course_id=None,
-                               group_column_name=None,
-                               column_name=None, groups_preview=groups,
-                               group_names=current_user.moodle.group_names_to_id)
+        return render_template("create_groups.html", username=current_user.get_id())
     return redirect(url_for("reporting.login"))
 
 
 def create_response(moodle: MoodleSyncTesting):
     response = dict()
     if moodle.course_id is not None:
-        response['course_name'] = moodle.courses[current_user.moodle.course_id]
+        response['select-course-id'] = moodle.courses[moodle.course_id]
     if moodle.courses is not None:
         courses_html = ""
         for course_id, course_name in moodle.courses.items():
             courses_html += f'<li><a class="dropdown-item" onclick="course({course_id})">{course_name}</a></li>'
-        response['courses'] = courses_html
+        response['select-course-list'] = courses_html
     if moodle.students is not None:
-        response['students'] = moodle.students.to_html(table_id="datatablesSimple")  # TODO to html?
-        response['columns'] = moodle.students.columns.to_list()  # TODO to html
+        response['student-preview'] = moodle.students.to_html(table_id="datatablesSimple")
+        group_column_names_html = ""
+        column_names_html = ""
+        for column_names in moodle.students.columns.to_list():
+            group_column_names_html += '<li><a class="dropdown-item" onclick="group_name(\'' + column_names + '\')">' + column_names + '</a></li>'
+            column_names_html += '<li><a class="dropdown-item" onclick="column_name(\'' + column_names + '\')">' + column_names + '</a></li>'
+        response['select-group-list'] = group_column_names_html
+        response['column-name-list'] = column_names_html
     if moodle.group_column_name is not None:
-        response['group_column_name'] = moodle.group_column_name
+        response['select-group'] = moodle.group_column_name
+        if moodle.course_id is not None:
+            groups = moodle.count_students_in_groups()  # TODO error when wrong column name
+            groups = pd.DataFrame(groups).reset_index().rename(columns={'name': 'Students'}).to_html(
+                classes="table table-striped table-hover", justify="left")
+            response['groups-preview'] = groups
     if moodle.column_name is not None:
-        response['column_name'] = moodle.column_name
+        response['column-name'] = moodle.column_name
     if moodle.group_names_to_id is not None:
         response['group_names'] = moodle.group_names_to_id
+
+    response[
+        'enroll-button'] = '<a class="btn btn-secondary" href="/create-groups/enroll" role="button">Enroll missing students</a>'
+    response[
+        'create-button'] = '<a class="btn btn-secondary" href="/create-groups/create" role="button">Create Groups</a>'
+    response[
+        'add-button'] = '<a class="btn btn-secondary" href="/create-groups/add" role="button">Add students to groups</a>'
+
+    # response['flash'] = toast_html.replace("{{message}}", "another test")
 
     return response
 
@@ -94,6 +109,24 @@ def get_all():
         if get_moodle() is not None:
             return create_response(current_user.moodle)
     return redirect(url_for("reporting.login"))  # TODO error message?
+
+
+@create_groups.post("/file")
+def file():
+    if 'file' not in request.files:
+        print('No file part')
+        return {"Error": "No file part"}
+    file = request.files.get('file')
+    if file.filename == '':
+        print('No selected file')
+        return {"Error": "No selected file"}
+    if file and allowed_file(file.filename):
+        print(file.filename)
+        print(file.content_type)
+        print(file.mimetype)
+        print(file.stream)
+        print(file.read())
+        return {"Error": "Success File received"}
 
 
 @create_groups.post("/file-upload")

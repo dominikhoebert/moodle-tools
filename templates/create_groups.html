@@ -25,6 +25,25 @@
                     </div>
                 </div>
             </form>
+            <!-- HTML5 Input Form Elements -->
+            <input id="fileupload" type="file" name="fileupload"/>
+            <button id="upload-button" onclick="uploadFile()"> Upload</button>
+
+            <!-- Ajax JavaScript File Upload Logic -->
+            <script>
+  async function uploadFile() {
+  let formData = new FormData();
+  formData.append("file", fileupload.files[0]);
+  await fetch('/create-groups/file', {
+    method: "POST",
+    body: formData
+  }).then(response => response.json())
+        .then(data => parse_response(data));
+  alert('The file has been uploaded successfully.');
+  }
+
+
+            </script>
         </div>
     </div>
     <div class="col-xl-6">
@@ -42,19 +61,9 @@
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false" id="select-course-id">
-                                    {% if course_id is not none %}
-                                    {{ course_id }}
-                                    {% else %}
                                     Select
-                                    {% endif %}
                                 </button>
                                 <ul class="dropdown-menu" id="select-course-list">
-                                    {% if courses is not none %}
-                                    {% for key,value in courses.items() %}
-                                    <!--                                    <li><a class="dropdown-item" href="/create-groups/course/{{key}}">{{value}}</a></li>-->
-                                    <li><a class="dropdown-item" onclick="course({{key}})">{{value}}</a></li>
-                                    {% endfor %}
-                                    {% endif %}
                                 </ul>
                             </div>
                         </div>
@@ -64,21 +73,9 @@
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false" id="select-group">
-                                    {% if group_column_name is not none %}
-                                    {{ group_column_name }}
-                                    {% else %}
                                     Select
-                                    {% endif %}
                                 </button>
                                 <ul class="dropdown-menu" id="select-group-list">
-                                    {% if columns is not none %}
-                                    {% for col in columns %}
-<!--                                    <li><a class="dropdown-item" href="/create-groups/groupname/{{col}}">{{col}}</a>-->
-<!--                                    </li>-->
-                                    <li><a class="dropdown-item" onclick="group_name('{{col}}')" >{{col}}</a>
-                                    </li>
-                                    {% endfor %}
-                                    {% endif %}
                                 </ul>
                             </div>
                         </div>
@@ -88,48 +85,24 @@
                                 <button class="btn btn-secondary dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false" id="column-name">
-                                    {% if column_name is not none %}
-                                    {{ column_name }}
-                                    {% else %}
                                     Select
-                                    {% endif %}
                                 </button>
                                 <ul class="dropdown-menu" id="column-name-list">
-                                    {% if columns is not none %}
-                                    {% for col in columns %}
-<!--                                    <li><a class="dropdown-item" href="/create-groups/column/{{col}}">{{col}}</a></li>-->
-                                    <li><a class="dropdown-item" onclick="column_name('{{col}}')" >{{col}}</a></li>
-                                    {% endfor %}
-                                    {% endif %}
                                 </ul>
                             </div>
                         </div>
                     </div>
                     <div class="row g-3">
-                        <div class="col-auto">
-                            {% if course_id is none or column_name is none %}
+                        <div class="col-auto" id="enroll-button">
                             <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Enroll missing
                                 students</a>
-                            {% else %}
-                            <a class="btn btn-secondary" href="/create-groups/enroll" role="button">Enroll missing
-                                students</a>
-                            {% endif %}
                         </div>
-                        <div class="col-auto">
-                            {% if course_id is none or column_name is none or columns is none %}
+                        <div class="col-auto" id="create-button">
                             <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Create Groups</a>
-                            {% else %}
-                            <a class="btn btn-secondary" href="/create-groups/create" role="button">Create Groups</a>
-                            {% endif %}
                         </div>
-                        <div class="col-auto">
-                            {% if group_names is none %}
+                        <div class="col-auto" id="add-button">
                             <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Add students to
                                 groups</a>
-                            {% else %}
-                            <a class="btn btn-secondary" href="/create-groups/add" role="button">Add students to
-                                groups</a>
-                            {% endif %}
                         </div>
                     </div>
                 </form>
@@ -144,10 +117,7 @@
                 <i class="fas fa-table me-1"></i>
                 Students Preview
             </div>
-            <div class="card-body">
-                {% if students is not none %}
-                {{ students|safe }}
-                {% endif %}
+            <div class="card-body" id="student-preview">
             </div>
         </div>
     </div>
@@ -158,16 +128,18 @@
                 Groups Preview
             </div>
             <div class="card-body">
-                <div class="col-xl-4">
-                    {% if groups_preview is not none %}
-                    {{ groups_preview|safe }}
-                    {% endif %}
+                <div class="col-xl-4" id="groups-preview">
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script>
+    function toast(message) {
+        document.getElementById("flash-toast").innerHTML = message
+        flash_toast()
+    }
+
     function course(course_id) {
         fetch("/create-groups/course/" + course_id)
         .then(response => response.json())
@@ -188,27 +160,22 @@
 
     function parse_response(response) {
         for (let [key, value] of Object.entries(response)) {
-            if(key=="course_name") {
-                document.getElementById("select-course-id").innerHTML = value
+            if(key=="flash") {
+                toast(value)
             }
-            if(key=="Error") {
+            else if(key=="Error") {
                 console.log(key, value)
             }
-            if(key=="courses") {
-                document.getElementById("select-course-list").innerHTML = value
+            else {
+                element = document.getElementById(key)
+                if (element) {
+                    element.innerHTML = value
+                }
             }
-            if(key=="group_column_name") {
-                document.getElementById("select-group").innerHTML = value
-            }
-            if(key=="column_name") {
-                document.getElementById("column-name").innerHTML = value
-            }
-            if(key=="column_name") {
-                document.getElementById("column-name-list").innerHTML = value
-            }
-            if(key=="group_name") {
-                document.getElementById("select-group-list").innerHTML = value
-            }
+        }
+        const datatablesSimple = document.getElementById('datatablesSimple');
+        if (datatablesSimple) {
+            new simpleDatatables.DataTable(datatablesSimple);
         }
     }
 
@@ -219,6 +186,11 @@
     }
 
     get_all()
+
+
+
+
+
 
 </script>
 {% endblock %}
