@@ -41,40 +41,54 @@ def create_groups_get():
     course_name = None
     groups = None
     if current_user.get_id() is not None:
-        if get_moodle() is not None:
-            if current_user.moodle.students is not None:
-                students = current_user.moodle.students_original.to_html(table_id="datatablesSimple")
-                columns = current_user.moodle.students_original.columns.to_list()
-            if current_user.moodle.course_id is not None:
-                course_name = current_user.moodle.courses[current_user.moodle.course_id]
-                if current_user.moodle.group_column_name is not None:
-                    # color students preview column
-                    # create groups preview
-                    groups = current_user.moodle.count_students_in_groups()  # TODO error when wrong column name
-                    groups = pd.DataFrame(groups).reset_index().rename(columns={'name': 'Students'}).to_html(
-                        classes="table table-striped table-hover", justify="left")
-                if current_user.moodle.column_name is not None:
-                    # TODO color students preview column
-                    # TODO color students preview missing students rows
-                    ...
         return render_template("create_groups.html", username=current_user.get_id())
     return redirect(url_for("reporting.login"))
 
 
-def ajax_flash(message: str):
-    return {'flash': toast_html.replace("{{message}}", message)}
+def ajax_flash(message: str, response: dict = None):
+    if response is None:
+        response = dict()
+    response['flash'] = toast_html.replace("{{message}}", message)
+    return response
 
 
-def create_response(moodle: MoodleSyncTesting):
-    response = dict()
-    if moodle.course_id is not None:
+def buttons_html(button: str, activated: bool = False, response: dict = None):
+    if response is None:
+        response = dict()
+    if button == "enroll" or button == 'all':
+        if activated:
+            response[
+                'enroll-button'] = '<a class="btn btn-secondary" href="/create-groups/enroll" role="button">Enroll missing students</a>'
+        else:
+            response[
+                'enroll-button'] = '<a class="btn btn-secondary disabled" role="button" aria-disabled="true">Enroll missing students</a>'
+    if button == "create" or button == 'all':
+        if activated:
+            response[
+                'create-button'] = '<a class="btn btn-secondary" href="/create-groups/create" role="button">Create Groups</a>'
+        else:
+            response[
+                'create-button'] = '<a class="btn btn-secondary disabled" role="button" aria-disabled="true">Create Groups</a>'
+    if button == "add" or button == 'all':
+        if activated:
+            response[
+                'add-button'] = '<a class="btn btn-secondary" href="/create-groups/add" role="button">Add students to groups</a>'
+        else:
+            response[
+                'add-button'] = '<a class="btn btn-secondary disabled" role="button" aria-disabled="true">Add students to groups</a>'
+
+
+def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None):
+    if response is None:
+        response = dict()
+    if moodle.course_id is not None and (kind == "course" or kind == "all"):
         response['select-course-id'] = moodle.courses[moodle.course_id]
-    if moodle.courses is not None:
+    if moodle.courses is not None and (kind == "course_list" or kind == "all"):
         courses_html = ""
         for course_id, course_name in moodle.courses.items():
             courses_html += f'<li><a class="dropdown-item" onclick="course({course_id})">{course_name}</a></li>'
         response['select-course-list'] = courses_html
-    if moodle.students is not None:
+    if moodle.students is not None and (kind == "student_list" or kind == "all"):
         response['student-preview'] = moodle.students.to_html(table_id="datatablesSimple")
         group_column_names_html = ""
         column_names_html = ""
@@ -83,26 +97,15 @@ def create_response(moodle: MoodleSyncTesting):
             column_names_html += '<li><a class="dropdown-item" onclick="column_name(\'' + column_names + '\')">' + column_names + '</a></li>'
         response['select-group-list'] = group_column_names_html
         response['column-name-list'] = column_names_html
-    if moodle.group_column_name is not None:
+    if moodle.group_column_name is not None and (kind == "group_name" or kind == "all"):
         response['select-group'] = moodle.group_column_name
         if moodle.course_id is not None:
             groups = moodle.count_students_in_groups()  # TODO error when wrong column name
             groups = pd.DataFrame(groups).reset_index().rename(columns={'name': 'Students'}).to_html(
                 classes="table table-striped table-hover", justify="left")
             response['groups-preview'] = groups
-    if moodle.column_name is not None:
+    if moodle.column_name is not None and (kind == "column_name" or kind == "all"):
         response['column-name'] = moodle.column_name
-    if moodle.group_names_to_id is not None:
-        response['group_names'] = moodle.group_names_to_id
-
-    response[
-        'enroll-button'] = '<a class="btn btn-secondary" href="/create-groups/enroll" role="button">Enroll missing students</a>'
-    response[
-        'create-button'] = '<a class="btn btn-secondary" href="/create-groups/create" role="button">Create Groups</a>'
-    response[
-        'add-button'] = '<a class="btn btn-secondary" href="/create-groups/add" role="button">Add students to groups</a>'
-
-    # response['flash'] = toast_html.replace("{{message}}", "another test")
 
     return response
 
