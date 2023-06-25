@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from flask_login import current_user
-from markupsafe import Markup
 import pandas as pd
 import io
 
@@ -36,10 +35,6 @@ def color_html_table(html: str, find_str: str, tag: str):
 
 @create_groups.get("/")
 def create_groups_get():
-    students = None
-    columns = None
-    course_name = None
-    groups = None
     if current_user.get_id() is not None:
         return render_template("create_groups.html", username=current_user.get_id())
     return redirect(url_for("reporting.login"))
@@ -57,25 +52,26 @@ def buttons_html(button: str, activated: bool = False, response: dict = None):
         response = dict()
     if button == "enroll" or button == 'all':
         if activated:
-            response[
-                'enroll-button'] = '<a class="btn btn-secondary" href="/create-groups/enroll" role="button">Enroll missing students</a>'
+            response['enroll-button'] = '<a class="btn btn-secondary" onclick="enroll()" ' \
+                                        'role="button">Enroll missing students</a>'
         else:
-            response[
-                'enroll-button'] = '<a class="btn btn-secondary disabled" role="button" aria-disabled="true">Enroll missing students</a>'
+            response['enroll-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
+                                        'aria-disabled="true">Enroll missing students</a>'
     if button == "create" or button == 'all':
         if activated:
-            response[
-                'create-button'] = '<a class="btn btn-secondary" href="/create-groups/create" role="button">Create Groups</a>'
+            response['create-button'] = '<a class="btn btn-secondary" onclick="create()" ' \
+                                        'role="button">Create Groups</a>'
         else:
-            response[
-                'create-button'] = '<a class="btn btn-secondary disabled" role="button" aria-disabled="true">Create Groups</a>'
+            response['create-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
+                                        'aria-disabled="true">Create Groups</a>'
     if button == "add" or button == 'all':
         if activated:
-            response[
-                'add-button'] = '<a class="btn btn-secondary" href="/create-groups/add" role="button">Add students to groups</a>'
+            response['add-button'] = '<a class="btn btn-secondary" onclick="add()" ' \
+                                     'role="button">Add students to groups</a>'
         else:
-            response[
-                'add-button'] = '<a class="btn btn-secondary disabled" role="button" aria-disabled="true">Add students to groups</a>'
+            response['add-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
+                                     'aria-disabled="true">Add students to groups</a>'
+    return response
 
 
 def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None):
@@ -89,23 +85,30 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
             courses_html += f'<li><a class="dropdown-item" onclick="course({course_id})">{course_name}</a></li>'
         response['select-course-list'] = courses_html
     if moodle.students is not None and (kind == "student_list" or kind == "all"):
-        response['student-preview'] = moodle.students.to_html(table_id="datatablesSimple")
+        response['student-preview'] = moodle.students.to_html(table_id="datatablesSimple")  # TODO use original table?
         group_column_names_html = ""
         column_names_html = ""
         for column_names in moodle.students.columns.to_list():
-            group_column_names_html += '<li><a class="dropdown-item" onclick="group_name(\'' + column_names + '\')">' + column_names + '</a></li>'
-            column_names_html += '<li><a class="dropdown-item" onclick="column_name(\'' + column_names + '\')">' + column_names + '</a></li>'
+            group_column_names_html += '<li><a class="dropdown-item" onclick="group_name(\'' + column_names + '\')">' \
+                                       + column_names + '</a></li>'
+            column_names_html += '<li><a class="dropdown-item" onclick="column_name(\'' + column_names + '\')">' \
+                                 + column_names + '</a></li>'
         response['select-group-list'] = group_column_names_html
         response['column-name-list'] = column_names_html
     if moodle.group_column_name is not None and (kind == "group_name" or kind == "all"):
         response['select-group'] = moodle.group_column_name
+        groups = moodle.count_students_in_groups()
+        groups = pd.DataFrame(groups).reset_index().rename(columns={'name': 'Students'}).to_html(
+            classes="table table-striped table-hover", justify="left")
+        response['groups-preview'] = groups
         if moodle.course_id is not None:
-            groups = moodle.count_students_in_groups()  # TODO error when wrong column name
-            groups = pd.DataFrame(groups).reset_index().rename(columns={'name': 'Students'}).to_html(
-                classes="table table-striped table-hover", justify="left")
-            response['groups-preview'] = groups
+            response = buttons_html("create", True, response)
     if moodle.column_name is not None and (kind == "column_name" or kind == "all"):
         response['column-name'] = moodle.column_name
+        if moodle.course_id is not None:
+            response = buttons_html("enroll", True, response)
+    if moodle.group_names_to_id is not None and kind == "all":
+        response = buttons_html("add", True, response)
 
     return response
 
@@ -114,7 +117,7 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
 def get_all():
     if current_user.get_id() is not None:
         if get_moodle() is not None:
-            return create_response(current_user.moodle)
+            return create_response(kind="all", moodle=current_user.moodle)
     return redirect(url_for("reporting.login"))  # TODO error message?
 
 
@@ -131,6 +134,8 @@ def file_upload():
             df = pd.read_csv(io.BytesIO(file.read()))
         elif file.filename.endswith(".xlsx") or file.filename.endswith(".xls"):
             df = pd.read_excel(file.read())
+        else:
+            return ajax_flash("File type not supported")
 
         if get_moodle() is not None:
             current_user.moodle.students_original = None
@@ -140,7 +145,14 @@ def file_upload():
             current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
 
-        return create_response(current_user.moodle)
+            response = create_response(kind='student_list', moodle=current_user.moodle)
+            response = create_response(kind='group_name', moodle=current_user.moodle, response=response)
+            response['select-group'] = "Select"
+            response['column-name'] = "Select"
+            response = buttons_html(button='all', activated=False, response=response)
+            response['groups-preview'] = ""
+
+            return response
     return ajax_flash("File type not supported")
 
 
@@ -148,64 +160,88 @@ def file_upload():
 def course(course_id):
     if course_id is not None and course_id != 0:
         if get_moodle() is not None:
-            current_user.moodle.course_id = course_id
-            current_user.moodle.group_names_to_id = None  # reset group names
-            session["moodle"] = current_user.moodle.to_json()
-            return create_response(current_user.moodle)
+            moodle = current_user.moodle
+            moodle.course_id = course_id
+            moodle.group_names_to_id = None  # reset group names
+            session["moodle"] = moodle.to_json()
+
+            response = create_response(kind="course", moodle=moodle)
+            response = buttons_html(button='add', activated=False, response=response)
+            if moodle.course_id is not None:
+                response = buttons_html(button='enroll', activated=True, response=response)
+            if moodle.group_column_name is not None:
+                response = buttons_html(button='create', activated=True, response=response)
+            return response
     return {"Error", "while selecting course"}
-    # return redirect(url_for('create_groups.create_groups_get'))
 
 
 @create_groups.route("/column/<column_name>")
 def column(column_name):
     if column_name is not None and column_name != "":
         if get_moodle() is not None:
-            current_user.moodle.column_name = column_name
-            current_user.moodle.group_names_to_id = None  # reset group names
-            session["moodle"] = current_user.moodle.to_json()
-            return create_response(current_user.moodle)
+            moodle = current_user.moodle
+            moodle.column_name = column_name
+            moodle.group_names_to_id = None  # reset group names
+            session["moodle"] = moodle.to_json()
+
+            response = create_response(kind="column_name", moodle=moodle)
+            response = buttons_html(button='add', activated=False, response=response)
+            if moodle.course_id is not None:
+                response = buttons_html(button='enroll', activated=True, response=response)
+            return response
     return {"Error", "while selecting course"}
-    # return redirect(url_for('create_groups.create_groups_get'))
 
 
 @create_groups.route("/groupname/<group_column_name>")
 def groupname(group_column_name):
     if group_column_name is not None and group_column_name != "":
         if get_moodle() is not None:
-            current_user.moodle.group_column_name = group_column_name
-            current_user.moodle.group_names_to_id = None  # reset group names
-            session["moodle"] = current_user.moodle.to_json()
-            return create_response(current_user.moodle)
+            moodle = current_user.moodle
+            moodle.group_column_name = group_column_name
+            moodle.group_names_to_id = None  # reset group names
+            session["moodle"] = moodle.to_json()
+
+            response = create_response(kind="group_name", moodle=moodle)
+            response = buttons_html(button='add', activated=False, response=response)
+            if moodle.course_id is not None:
+                response = buttons_html(button='create', activated=True, response=response)
+            return response
     return {"Error", "while selecting course"}
-    # return redirect(url_for('create_groups.create_groups_get'))
 
 
 @create_groups.route("/enroll")
 def enroll():
     if get_moodle() is not None:
-        current_user.moodle.join_enrolled_students()
-        not_enrolled = current_user.moodle.get_not_enrolled_students()
-        current_user.moodle.enroll_students_for_groups()
-        session["moodle"] = current_user.moodle.to_json()
-        flash(f"{len(not_enrolled)} Students enrolled")
+        moodle = current_user.moodle
+        moodle.join_enrolled_students()
+        not_enrolled = moodle.get_not_enrolled_students()
+        moodle.enroll_students_for_groups()
+        session["moodle"] = moodle.to_json()
+        return ajax_flash(f"{len(not_enrolled)} Students enrolled")
     return redirect(url_for('create_groups.create_groups_get'))
 
 
 @create_groups.route("/create")
 def create():
     if get_moodle() is not None:
-        current_user.moodle.join_enrolled_students()
-        current_user.moodle.clean_students()
-        current_user.moodle.create_groups()
-        session["moodle"] = current_user.moodle.to_json()
-        flash(f"{len(current_user.moodle.group_names_to_id)} Groups created")
+        moodle = current_user.moodle
+        moodle.join_enrolled_students()
+        moodle.clean_students()
+        moodle.create_groups()
+        session["moodle"] = moodle.to_json()
+
+        response = ajax_flash(f"{len(moodle.group_names_to_id)} Groups created")
+        if moodle.group_names_to_id is not None:
+            response = buttons_html(button='add', activated=True, response=response)
+        return response
     return redirect(url_for('create_groups.create_groups_get'))
 
 
 @create_groups.route("/add")
 def add():
     if get_moodle() is not None:
-        current_user.moodle.add_students_to_groups()
-        session["moodle"] = current_user.moodle.to_json()
-        flash("Students added to groups")
+        moodle = current_user.moodle
+        moodle.add_students_to_groups()
+        session["moodle"] = moodle.to_json()
+        return ajax_flash("Students added to groups")
     return redirect(url_for('create_groups.create_groups_get'))

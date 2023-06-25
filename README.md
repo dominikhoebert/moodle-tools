@@ -49,9 +49,11 @@ Contact your moodle administrator for a moodle service including following web s
 
 ## TODO
 
-- use ajax https://flask.palletsprojects.com/en/2.3.x/patterns/javascript/
+- ~~use ajax https://flask.palletsprojects.com/en/2.3.x/patterns/javascript/~~
 - add students to already existing groups
-- flash toasts ajax
+- ~~flash toasts ajax~~
+- deactivate pressed buttons to prevent double click
+  - add progress bar/spinner
 - ~~ENV for mysql instead of sqlite~~
   - ~~Dockercompose~~
 - ~~EXPOSE 5000~~
@@ -66,6 +68,7 @@ Contact your moodle administrator for a moodle service including following web s
 - add tool notify
 - add tool upload
 - add tool aggregate
+- add tool student name flashcards
 - add automation
 - Cookie “session” does not have a proper “SameSite” attribute value. Soon, cookies without the “SameSite” attribute or
   with an invalid value will be treated as “Lax”. This means that the cookie will no longer be sent in third-party

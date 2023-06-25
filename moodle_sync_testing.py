@@ -140,7 +140,8 @@ class MoodleSyncTesting(MoodleSync):
         self.add_students_to_group(members)
 
     def count_students_in_groups(self):
-        return self.students.groupby(self.group_column_name).count()[self.students.columns[0]]
+        grouped = self.students.groupby(self.group_column_name).count()
+        return grouped[grouped.columns[0]]
 
     def log_count_students_in_groups(self):
         logger.debug("Students in groups:")
@@ -180,15 +181,17 @@ if __name__ == '__main__':
     moodle_sync = MoodleSyncTesting(credentials["url"], credentials["user"],
                                     credentials["service"], course_id=1309, students=pd.read_csv("data/test.csv"),
                                     column_name="email", group_column_name="groupname")
-    moodle_sync.login(credentials["password"])
-    moodle_sync.log_count_students_in_groups()
-    print(moodle_sync)
-    json = moodle_sync.to_json()
-    print(json)
-    new_moodle_sync = MoodleSyncTesting.from_json(json)
+
+    print(moodle_sync.count_students_in_groups())
+    # moodle_sync.login(credentials["password"])
+    # moodle_sync.log_count_students_in_groups()
+    # print(moodle_sync)
+    # json = moodle_sync.to_json()
+    # print(json)
+    # new_moodle_sync = MoodleSyncTesting.from_json(json)
     # new_moodle_sync.login()
-    new_moodle_sync.log_count_students_in_groups()
-    print(new_moodle_sync)
+    # new_moodle_sync.log_count_students_in_groups()
+    # print(new_moodle_sync)
 
     # moodle_sync.join_enrolled_students()
     # moodle_sync.enroll_students_for_groups()

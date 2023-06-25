@@ -17,7 +17,7 @@ app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db
 app.config["SESSION_SQLALCHEMY_TABLE"] = "sessions"
 # TODO add session timeout
-#app.config["SESSION_PERMANENT"] = False
+# app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_COOKIE_SECURE"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = 86400
 db.init_app(app)

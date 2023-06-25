@@ -148,6 +148,24 @@
         .then(data => parse_response(data))
     }
 
+    function enroll() {
+        fetch("/create-groups/enroll")
+        .then(response => response.json())
+        .then(data => parse_response(data))
+    }
+
+    function create() {
+        fetch("/create-groups/create")
+        .then(response => response.json())
+        .then(data => parse_response(data))
+    }
+
+    function add() {
+        fetch("/create-groups/add")
+        .then(response => response.json())
+        .then(data => parse_response(data))
+    }
+
     function parse_response(response) {
         for (let [key, value] of Object.entries(response)) {
             if(key=="flash") {
