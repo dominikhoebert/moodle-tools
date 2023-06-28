@@ -108,7 +108,19 @@
                 Groups Preview
             </div>
             <div class="card-body">
-                <div class="col-xl-4" id="groups-preview">
+                <div class="row g-2">
+                    <div class="col">
+                        <label class="form-label" for="column-name">New Groups</label>
+                        <div id="groups-preview">
+
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="column-name">Current Groups</label>
+                        <div id="current-groups-preview">
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -194,6 +206,7 @@
     }
 
     get_all()
+
 
 </script>
 {% endblock %}

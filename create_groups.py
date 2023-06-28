@@ -79,16 +79,21 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
         response = dict()
     if moodle.course_id is not None and (kind == "course" or kind == "all"):
         response['select-course-id'] = moodle.courses[moodle.course_id]
+        if moodle.groups is not None:
+            groups = '<ul class="list-group">'
+            for group in moodle.groups:
+                groups += '<li class="list-group-item">' + group["name"] + '</li>'
+            response['current-groups-preview'] = groups + '</ul>'
     if moodle.courses is not None and (kind == "course_list" or kind == "all"):
         courses_html = ""
         for course_id, course_name in moodle.courses.items():
             courses_html += f'<li><a class="dropdown-item" onclick="course({course_id})">{course_name}</a></li>'
         response['select-course-list'] = courses_html
     if moodle.students is not None and (kind == "student_list" or kind == "all"):
-        response['student-preview'] = moodle.students.to_html(table_id="datatablesSimple")  # TODO use original table?
+        response['student-preview'] = moodle.students_original.to_html(table_id="datatablesSimple")
         group_column_names_html = ""
         column_names_html = ""
-        for column_names in moodle.students.columns.to_list():
+        for column_names in moodle.students_original.columns.to_list():
             group_column_names_html += '<li><a class="dropdown-item" onclick="group_name(\'' + column_names + '\')">' \
                                        + column_names + '</a></li>'
             column_names_html += '<li><a class="dropdown-item" onclick="column_name(\'' + column_names + '\')">' \
@@ -97,11 +102,11 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
         response['column-name-list'] = column_names_html
     if moodle.group_column_name is not None and (kind == "group_name" or kind == "all"):
         response['select-group'] = moodle.group_column_name
-        groups = moodle.count_students_in_groups()
-        groups = pd.DataFrame(groups).reset_index().rename(columns={'name': 'Students'}).to_html(
+        new_groups = moodle.count_students_in_groups()
+        new_groups = pd.DataFrame(new_groups).reset_index().rename(columns={'name': 'Students'}).to_html(
             classes="table table-striped table-hover", justify="left")
-        response['groups-preview'] = groups
-        if moodle.course_id is not None:
+        response['groups-preview'] = new_groups
+        if moodle.course_id is not None and moodle.column_name is not None:
             response = buttons_html("create", True, response)
     if moodle.column_name is not None and (kind == "column_name" or kind == "all"):
         response['column-name'] = moodle.column_name
@@ -163,13 +168,15 @@ def course(course_id):
             moodle = current_user.moodle
             moodle.course_id = course_id
             moodle.group_names_to_id = None  # reset group names
+            moodle.groups = moodle.get_groups(moodle.course_id)
+            # TODO check if all groups already exist, then activate add button
             session["moodle"] = moodle.to_json()
 
             response = create_response(kind="course", moodle=moodle)
             response = buttons_html(button='add', activated=False, response=response)
             if moodle.course_id is not None:
                 response = buttons_html(button='enroll', activated=True, response=response)
-            if moodle.group_column_name is not None:
+            if moodle.group_column_name is not None and moodle.column_name is not None:
                 response = buttons_html(button='create', activated=True, response=response)
             return response
     return {"Error", "while selecting course"}
@@ -188,6 +195,8 @@ def column(column_name):
             response = buttons_html(button='add', activated=False, response=response)
             if moodle.course_id is not None:
                 response = buttons_html(button='enroll', activated=True, response=response)
+                if moodle.group_column_name is not None:
+                    response = buttons_html(button='create', activated=True, response=response)
             return response
     return {"Error", "while selecting course"}
 
@@ -203,7 +212,7 @@ def groupname(group_column_name):
 
             response = create_response(kind="group_name", moodle=moodle)
             response = buttons_html(button='add', activated=False, response=response)
-            if moodle.course_id is not None:
+            if moodle.course_id is not None and moodle.column_name is not None:
                 response = buttons_html(button='create', activated=True, response=response)
             return response
     return {"Error", "while selecting course"}
@@ -227,10 +236,12 @@ def create():
         moodle = current_user.moodle
         moodle.join_enrolled_students()
         moodle.clean_students()
-        moodle.create_groups()
+        groups_count = moodle.create_groups()
+        moodle.groups = moodle.get_groups(moodle.course_id)
         session["moodle"] = moodle.to_json()
 
-        response = ajax_flash(f"{len(moodle.group_names_to_id)} Groups created")
+        response = ajax_flash(f"{groups_count} Groups created")
+        response = create_response(kind="course", moodle=moodle)
         if moodle.group_names_to_id is not None:
             response = buttons_html(button='add', activated=True, response=response)
         return response

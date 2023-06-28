@@ -7,20 +7,20 @@ a [Flask](https://flask.palletsprojects.com/en/2.3.x/) Web App.
 
 For some Apps User must be logged in using their moodle credentials (Moodle server and API service name can be changed
 for each user).
-Password will not be saved on the app. Instead the app tries to log the user into the moodle server.
+Password will not be saved on the app. Instead, the app tries to log the user into the moodle server.
 
 ## Create Groups
 
-First App helps creating multiple groups and adding students automatically.
+First App helps create multiple groups and adding students automatically.
 First a CSV or Excel file has to be uploaded (file will not be saved on the apps filesystem).
-Target course can be chosen, table columns for groupnames and students email/moodle-id can be selected.
+Target course can be chosen, table columns for group-names and students email/moodle-id can be selected.
 Then missing students can be automatically enrolled into the course. Groups can be created and students added to them.
 
 ![Create Groups](screenshots/screenshot_create_groups.png)
 
 ## Errors
 
-If a error occours during runtime, usually a logout [http://localhost:5000/logout](http://localhost:5000/logout) and
+If an error occurs during runtime, usually a logout [http://localhost:5000/logout](http://localhost:5000/logout) and
 login helps.
 
 ## Usage
@@ -51,14 +51,15 @@ Contact your moodle administrator for a moodle service including following web s
 
 - ~~use ajax https://flask.palletsprojects.com/en/2.3.x/patterns/javascript/~~
 - add students to already existing groups
+- error for wrong column name/group column name
 - ~~flash toasts ajax~~
 - deactivate pressed buttons to prevent double click
-  - add progress bar/spinner
+  - add progress bar/spinner https://getbootstrap.com/docs/5.3/components/spinners/
 - ~~ENV for mysql instead of sqlite~~
-  - ~~Dockercompose~~
+  - ~~Docker compose~~
 - ~~EXPOSE 5000~~
 - ~~Remove password from session~~
-- ~~Environment variables for standart values: moodle_url, moodle_service~~
+- ~~Environment variables for standard values: moodle_url, moodle_service~~
 - ~~add screenshots to readme~~
 - preview table https://gridjs.io/docs/examples/html-cells
     - color selected columns

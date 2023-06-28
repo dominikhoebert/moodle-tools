@@ -27,6 +27,11 @@ class MoodleSync:
         response = moodle_api.call('core_group_create_groups', self.url, self.key, groups=groups)
         return response
 
+    def get_groups(self, course_id: int):
+        """ Returns the groups of the given course. """
+        response = moodle_api.call('core_group_get_course_groups', self.url, self.key, courseid=course_id)
+        return response
+
     def add_students_to_group(self, members: list):
         """ Adds the given students to the given group. """
         response = moodle_api.call('core_group_add_group_members', self.url, self.key, members=members)

@@ -2,6 +2,7 @@ import pandas as pd
 from pandas import DataFrame
 from datetime import datetime
 import random
+import json
 
 from moodle_sync import MoodleSync
 from models import logger
@@ -22,6 +23,7 @@ class MoodleSyncTesting(MoodleSync):
         self.group_column_name = group_column_name
         self.group_names_to_id = None
         self.courses = None
+        self.groups = None
 
     def login(self, password):
         super().__init__(self.url, self.username, password, self.service)
@@ -43,19 +45,22 @@ class MoodleSyncTesting(MoodleSync):
             "group_column_name": self.group_column_name,
             "group_names_to_id": self.group_names_to_id,
             "courses": self.courses if self.courses is not None else None,
-            "token": self.key
+            "token": self.key,
+            "groups": json.dumps(self.groups) if self.groups is not None else None,
         }
 
-    def from_json(json):
-        mst = MoodleSyncTesting(json["url"], json["username"], json["service"], json["course_id"],
-                                pd.read_json(json["students"]) if json["students"] is not None else None,
-                                json["column_name"], json["group_column_name"],
-                                students_original=pd.read_json(json["students_original"]) if json[
-                                                                                                 "students_original"] is not None else None)
-        mst.group_names_to_id = json["group_names_to_id"]
-        mst.courses = json["courses"]
-        mst.key = json["token"]
-        mst.url = json["url"]
+    def from_json(moodle_json):
+        mst = MoodleSyncTesting(moodle_json["url"], moodle_json["username"], moodle_json["service"],
+                                moodle_json["course_id"],
+                                pd.read_json(moodle_json["students"]) if moodle_json["students"] is not None else None,
+                                moodle_json["column_name"], moodle_json["group_column_name"],
+                                students_original=pd.read_json(moodle_json["students_original"]) if moodle_json[
+                                                                                                        "students_original"] is not None else None)
+        mst.group_names_to_id = moodle_json["group_names_to_id"]
+        mst.courses = moodle_json["courses"]
+        mst.key = moodle_json["token"]
+        mst.url = moodle_json["url"]
+        mst.groups = json.loads(moodle_json["groups"]) if moodle_json["groups"] is not None else None
         return mst
 
     @property
@@ -113,16 +118,21 @@ class MoodleSyncTesting(MoodleSync):
         groups = []
         group_ids = {}
         date_string = datetime.now().strftime("%Y%m%d")
-        for g in self.group_names:
-            group_id = date_string + str(random.randrange(100, 999))
-            group_ids[g] = group_id
-            groups.append(
-                {"courseid": self.course_id, "name": g, "description": "", "idnumber": group_id})
-
-        response = self.create_group(groups)
         self.group_names_to_id = {}
-        for g in response:
-            self.group_names_to_id[g["name"]] = g["id"]
+        already_existing_groups = {group["name"]: group["id"] for group in self.groups if self.groups is not None}
+        for g in self.group_names:
+            if g in already_existing_groups:
+                self.group_names_to_id[g] = already_existing_groups[g]
+            else:
+                group_id = date_string + str(random.randrange(100, 999))
+                group_ids[g] = group_id
+                groups.append(
+                    {"courseid": self.course_id, "name": g, "description": "", "idnumber": group_id})
+        if len(groups) > 0:
+            response = self.create_group(groups)
+            for g in response:
+                self.group_names_to_id[g["name"]] = g["id"]
+        return len(groups)
 
     def log_groups(self):
         logger.debug("Groups created:")
@@ -182,8 +192,9 @@ if __name__ == '__main__':
                                     credentials["service"], course_id=1309, students=pd.read_csv("data/test.csv"),
                                     column_name="email", group_column_name="groupname")
 
-    print(moodle_sync.count_students_in_groups())
-    # moodle_sync.login(credentials["password"])
+    # print(moodle_sync.count_students_in_groups())
+    moodle_sync.login(credentials["password"])
+    print(moodle_sync.get_groups(1309))
     # moodle_sync.log_count_students_in_groups()
     # print(moodle_sync)
     # json = moodle_sync.to_json()
