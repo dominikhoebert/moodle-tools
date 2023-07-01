@@ -110,7 +110,6 @@ class MoodleSyncTesting(MoodleSync):
         self.students = self.students[self.students[self.group_column_name].notnull()]
         self.students = self.students[self.students[self.group_column_name] != ""]
 
-    @property
     def group_names(self):
         return self.students[self.group_column_name].unique()
 
@@ -120,7 +119,7 @@ class MoodleSyncTesting(MoodleSync):
         date_string = datetime.now().strftime("%Y%m%d")
         self.group_names_to_id = {}
         already_existing_groups = {group["name"]: group["id"] for group in self.groups if self.groups is not None}
-        for g in self.group_names:
+        for g in self.group_names():
             if g in already_existing_groups:
                 self.group_names_to_id[g] = already_existing_groups[g]
             else:

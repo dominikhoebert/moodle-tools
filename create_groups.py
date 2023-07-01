@@ -114,8 +114,17 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
             response = buttons_html("enroll", True, response)
     if moodle.group_names_to_id is not None and kind == "all":
         response = buttons_html("add", True, response)
-
     return response
+
+
+def check_all_groups_exist(moodle: MoodleSyncTesting):
+    if moodle.groups is None or moodle.students is None or moodle.group_column_name is None:
+        return False
+    existing_groups = [g["name"] for g in moodle.groups]
+    for group in moodle.group_names():
+        if group not in existing_groups:
+            return False
+    return True
 
 
 @create_groups.route("/get_all")
@@ -169,11 +178,10 @@ def course(course_id):
             moodle.course_id = course_id
             moodle.group_names_to_id = None  # reset group names
             moodle.groups = moodle.get_groups(moodle.course_id)
-            # TODO check if all groups already exist, then activate add button
             session["moodle"] = moodle.to_json()
 
             response = create_response(kind="course", moodle=moodle)
-            response = buttons_html(button='add', activated=False, response=response)
+            response = buttons_html(button='add', activated=check_all_groups_exist(moodle), response=response)
             if moodle.course_id is not None:
                 response = buttons_html(button='enroll', activated=True, response=response)
             if moodle.group_column_name is not None and moodle.column_name is not None:
@@ -192,7 +200,7 @@ def column(column_name):
             session["moodle"] = moodle.to_json()
 
             response = create_response(kind="column_name", moodle=moodle)
-            response = buttons_html(button='add', activated=False, response=response)
+            response = buttons_html(button='add', activated=check_all_groups_exist(moodle), response=response)
             if moodle.course_id is not None:
                 response = buttons_html(button='enroll', activated=True, response=response)
                 if moodle.group_column_name is not None:
@@ -211,7 +219,7 @@ def groupname(group_column_name):
             session["moodle"] = moodle.to_json()
 
             response = create_response(kind="group_name", moodle=moodle)
-            response = buttons_html(button='add', activated=False, response=response)
+            response = buttons_html(button='add', activated=check_all_groups_exist(moodle), response=response)
             if moodle.course_id is not None and moodle.column_name is not None:
                 response = buttons_html(button='create', activated=True, response=response)
             return response
