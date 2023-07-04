@@ -140,49 +140,5 @@
         </div>
     </div>
 </div>
-<script>
-    async function uploadFile() {
-      let formData = new FormData();
-      formData.append("file", fileupload.files[0]);
-      await fetch('/create-groups/file-upload', {
-        method: "POST",
-        body: formData
-      }).then(response => response.json())
-            .then(data => parse_response(data));
-    }
-
-    function toast(message) {
-        document.getElementById("flash-toast").innerHTML = message
-        flash_toast()
-    }
-
-    function update(url) {
-        fetch("/create-groups/" + url)
-        .then(response => response.json())
-        .then(data => parse_response(data))
-    }
-
-    function parse_response(response) {
-        for (let [key, value] of Object.entries(response)) {
-            if(key=="flash") {
-                toast(value)
-            }
-            else if(key=="Error") {
-                console.log(key, value)
-            }
-            else {
-                element = document.getElementById(key)
-                if (element) {
-                    element.innerHTML = value
-                }
-            }
-        }
-        const datatablesSimple = document.getElementById('datatablesSimple');
-        if (datatablesSimple) {
-            new simpleDatatables.DataTable(datatablesSimple);
-        }
-    }
-
-    update('get_all')
-</script>
+<script src="{{ url_for('static', filename='js/create_groups.js') }}"></script>
 {% endblock %}
