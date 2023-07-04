@@ -22,6 +22,12 @@ def login_post():
         moodle_user.login(password)
     except KeyError:
         return redirect(url_for("error401"))
+    except ConnectionError as e:
+        logger.error(e)
+        return redirect(url_for("error401"))
+    except Exception as e:
+        logger.error(e)
+        return redirect(url_for("error401"))
     user = User.query.filter_by(username=username).first()
     if user:
         login_user(user)

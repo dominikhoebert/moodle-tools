@@ -53,21 +53,21 @@ def buttons_html(button: str, activated: bool = False, response: dict = None):
         response = dict()
     if button == "enroll" or button == 'all':
         if activated:
-            response['enroll-button'] = '<a class="btn btn-secondary" onclick="enroll()" ' \
+            response['enroll-button'] = '<a class="btn btn-secondary" onclick="update(\'enroll\')" ' \
                                         'role="button">Enroll missing students</a>'
         else:
             response['enroll-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
                                         'aria-disabled="true">Enroll missing students</a>'
     if button == "create" or button == 'all':
         if activated:
-            response['create-button'] = '<a class="btn btn-secondary" onclick="create()" ' \
+            response['create-button'] = '<a class="btn btn-secondary" onclick="update(\'create\')" ' \
                                         'role="button">Create Groups</a>'
         else:
             response['create-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
                                         'aria-disabled="true">Create Groups</a>'
     if button == "add" or button == 'all':
         if activated:
-            response['add-button'] = '<a class="btn btn-secondary" onclick="add()" ' \
+            response['add-button'] = '<a class="btn btn-secondary" onclick="update(\'add\')" ' \
                                      'role="button">Add students to groups</a>'
         else:
             response['add-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
@@ -95,16 +95,16 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
     if moodle.courses is not None and (kind == "course_list" or kind == "all"):
         courses_html = ""
         for course_id, course_name in moodle.courses.items():
-            courses_html += f'<li><a class="dropdown-item" onclick="course({course_id})">{course_name}</a></li>'
+            courses_html += f'<li><a class="dropdown-item" onclick="update(\'course/\' + {course_id})">{course_name}</a></li>'
         response['select-course-list'] = courses_html
     if moodle.students is not None and (kind == "student_list" or kind == "all"):
         response['student-preview'] = moodle.students_original.to_html(table_id="datatablesSimple")
         group_column_names_html = ""
         column_names_html = ""
         for column_names in moodle.students_original.columns.to_list():
-            group_column_names_html += '<li><a class="dropdown-item" onclick="group_name(\'' + column_names + '\')">' \
-                                       + column_names + '</a></li>'
-            column_names_html += '<li><a class="dropdown-item" onclick="column_name(\'' + column_names + '\')">' \
+            group_column_names_html += '<li><a class="dropdown-item" onclick="update(\'groupname/' + column_names \
+                                       + '\')">' + column_names + '</a></li>'
+            column_names_html += '<li><a class="dropdown-item" onclick="update(\'column/' + column_names + '\')">' \
                                  + column_names + '</a></li>'
         response['select-group-list'] = group_column_names_html
         response['column-name-list'] = column_names_html

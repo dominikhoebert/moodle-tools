@@ -49,6 +49,7 @@ Contact your moodle administrator for a moodle service including following web s
 
 ## TODO
 
+- ~~catch wrong url login error~~
 - ~~use ajax https://flask.palletsprojects.com/en/2.3.x/patterns/javascript/~~
 - ~~add students to already existing groups~~
 - ~~error for wrong column name/group column name~~

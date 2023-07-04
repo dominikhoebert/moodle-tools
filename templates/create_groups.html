@@ -156,38 +156,8 @@
         flash_toast()
     }
 
-    function course(course_id) {
-        fetch("/create-groups/course/" + course_id)
-        .then(response => response.json())
-        .then(data => parse_response(data))
-    }
-
-    function column_name(name) {
-        fetch("/create-groups/column/" + name)
-        .then(response => response.json())
-        .then(data => parse_response(data))
-    }
-
-    function group_name(name) {
-        fetch("/create-groups/groupname/" + name)
-        .then(response => response.json())
-        .then(data => parse_response(data))
-    }
-
-    function enroll() {
-        fetch("/create-groups/enroll")
-        .then(response => response.json())
-        .then(data => parse_response(data))
-    }
-
-    function create() {
-        fetch("/create-groups/create")
-        .then(response => response.json())
-        .then(data => parse_response(data))
-    }
-
-    function add() {
-        fetch("/create-groups/add")
+    function update(url) {
+        fetch("/create-groups/" + url)
         .then(response => response.json())
         .then(data => parse_response(data))
     }
@@ -213,15 +183,6 @@
         }
     }
 
-    function get_all() {
-        fetch("/create-groups/get_all")
-        .then(response => response.json())
-        .then(data => parse_response(data))
-    }
-
-    get_all()
-
-
-
+    update('get_all')
 </script>
 {% endblock %}
