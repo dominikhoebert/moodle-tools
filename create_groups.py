@@ -12,6 +12,7 @@ create_groups = Blueprint("create_groups", __name__, url_prefix="/create-groups"
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
 
 toast_html = open("templates/toast.html", "r").read()
+course_links_html = open("templates/course_links.html", "r").read()
 
 
 def allowed_file(filename):
@@ -79,11 +80,18 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
         response = dict()
     if moodle.course_id is not None and (kind == "course" or kind == "all"):
         response['select-course-id'] = moodle.courses[moodle.course_id]
+        response['course-links'] = course_links_html.replace("{{id}}", str(moodle.course_id)).replace("{{url}}",
+                                                                                                      moodle.url)
         if moodle.groups is not None:
-            groups = '<ul class="list-group">'
-            for group in moodle.groups:
-                groups += '<li class="list-group-item">' + group["name"] + '</li>'
-            response['current-groups-preview'] = groups + '</ul>'
+            if len(moodle.groups) > 0:
+                groups = '<div class="list-group">'
+                for group in moodle.groups:
+                    groups += '<a target="_blank" rel="noopener noreferrer" href="' + moodle.url + \
+                              '/group/members.php?group=' + str(group['id'])
+                    groups += '" class="list-group-item list-group-item-action">' + group["name"] + '</a>'
+                response['current-groups-preview'] = groups + '</div>'
+            else:
+                response['current-groups-preview'] = "No existing groups"
     if moodle.courses is not None and (kind == "course_list" or kind == "all"):
         courses_html = ""
         for course_id, course_name in moodle.courses.items():
@@ -106,9 +114,9 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
         new_groups = pd.DataFrame(new_groups).reset_index().rename(columns={'name': 'Students'}).to_html(
             classes="table table-striped table-hover", justify="left")
         response['groups-preview'] = new_groups
-        if moodle.course_id is not None and moodle.column_name is not None:
+        if moodle.course_id is not None and moodle.right_on is not None:
             response = buttons_html("create", True, response)
-    if moodle.column_name is not None and (kind == "column_name" or kind == "all"):
+    if moodle.right_on is not None and (kind == "column_name" or kind == "all"):
         response['column-name'] = moodle.column_name
         if moodle.course_id is not None:
             response = buttons_html("enroll", True, response)
@@ -182,9 +190,9 @@ def course(course_id):
 
             response = create_response(kind="course", moodle=moodle)
             response = buttons_html(button='add', activated=check_all_groups_exist(moodle), response=response)
-            if moodle.course_id is not None:
+            if moodle.course_id is not None and moodle.right_on is not None:
                 response = buttons_html(button='enroll', activated=True, response=response)
-            if moodle.group_column_name is not None and moodle.column_name is not None:
+            if moodle.group_column_name is not None and moodle.right_on is not None:
                 response = buttons_html(button='create', activated=True, response=response)
             return response
     return {"Error", "while selecting course"}
@@ -201,7 +209,9 @@ def column(column_name):
 
             response = create_response(kind="column_name", moodle=moodle)
             response = buttons_html(button='add', activated=check_all_groups_exist(moodle), response=response)
-            if moodle.course_id is not None:
+            if moodle.right_on is None:
+                response = ajax_flash("Error: Email/Moodle-ID could not be recognised! Please choose a different one.")
+            elif moodle.course_id is not None:
                 response = buttons_html(button='enroll', activated=True, response=response)
                 if moodle.group_column_name is not None:
                     response = buttons_html(button='create', activated=True, response=response)
@@ -220,7 +230,7 @@ def groupname(group_column_name):
 
             response = create_response(kind="group_name", moodle=moodle)
             response = buttons_html(button='add', activated=check_all_groups_exist(moodle), response=response)
-            if moodle.course_id is not None and moodle.column_name is not None:
+            if moodle.course_id is not None and moodle.right_on is not None:
                 response = buttons_html(button='create', activated=True, response=response)
             return response
     return {"Error", "while selecting course"}

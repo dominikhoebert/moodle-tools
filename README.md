@@ -50,8 +50,11 @@ Contact your moodle administrator for a moodle service including following web s
 ## TODO
 
 - ~~use ajax https://flask.palletsprojects.com/en/2.3.x/patterns/javascript/~~
-- add students to already existing groups
-- error for wrong column name/group column name
+- ~~add students to already existing groups~~
+- ~~error for wrong column name/group column name~~
+- ~~show "No Groups" when no groups in a course~~
+- ~~add card with course links: course /course/view.php?id=3; participants /user/index.php?id=3; groups /group/index.php?id=3~~
+- ~~add links to current groups /group/members.php?group=5~~
 - ~~flash toasts ajax~~
 - deactivate pressed buttons to prevent double click
   - add progress bar/spinner https://getbootstrap.com/docs/5.3/components/spinners/
