@@ -57,7 +57,7 @@ function parse_response(response, button) {
         else if(key.endsWith('-button')) {
             element = document.getElementById(key)
             if (element) {
-                element.disabled = value;
+                element.disabled = (value === 'true');
             }
         }
         else {

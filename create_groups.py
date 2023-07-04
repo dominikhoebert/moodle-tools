@@ -49,30 +49,13 @@ def ajax_flash(message: str, response: dict = None):
 
 
 def buttons_html(button: str, activated: bool = False, response: dict = None):
+    print(button, activated, response)
     if response is None:
         response = dict()
-    # TODO Refacotr this
-    if button == "enroll" or button == 'all':
-        if activated:
-            response['enroll-button'] = '<a class="btn btn-secondary" onclick="update(\'enroll\')" ' \
-                                        'role="button">Enroll missing students</a>'
-        else:
-            response['enroll-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
-                                        'aria-disabled="true">Enroll missing students</a>'
-    if button == "create" or button == 'all':
-        if activated:
-            response['create-button'] = '<a class="btn btn-secondary" onclick="update(\'create\')" ' \
-                                        'role="button">Create Groups</a>'
-        else:
-            response['create-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
-                                        'aria-disabled="true">Create Groups</a>'
-    if button == "add" or button == 'all':
-        if activated:
-            response['add-button'] = '<a class="btn btn-secondary" onclick="update(\'add\')" ' \
-                                     'role="button">Add students to groups</a>'
-        else:
-            response['add-button'] = '<a class="btn btn-secondary disabled" role="button" ' \
-                                     'aria-disabled="true">Add students to groups</a>'
+    if button == 'all':
+        for b in ['enroll', 'create', 'add']:
+            buttons_html(b, activated, response)
+    response[f"{button}-button"] = "false" if activated else "true"
     return response
 
 
