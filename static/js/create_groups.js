@@ -17,10 +17,10 @@ function toast(message) {
 }
 
 function update(url) {
-    deactivateButton(url)
+    let button = deactivateButton(url)
     fetch("/create-groups/" + url)
     .then(response => response.json())
-    .then(data => parse_response(data))
+    .then(data => parse_response(data, button))
 }
 
 function deactivateButton(name) {
@@ -39,13 +39,15 @@ function deactivateButton(name) {
     if (button) {
         button.disabled = true;
         button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + button.innerHTML;
+        return button;
     }
+    return null;
 }
 
 function parse_response(response, button) {
     if(button) {
         button.disabled = false;
-        button.innerHTML = 'Upload';
+        button.innerHTML = button.innerHTML.replace('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ', '');
     }
     for (let [key, value] of Object.entries(response)) {
         if(key=="flash") {

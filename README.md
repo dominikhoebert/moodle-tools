@@ -57,8 +57,8 @@ Contact your moodle administrator for a moodle service including following web s
 - ~~add card with course links: course /course/view.php?id=3; participants /user/index.php?id=3; groups /group/index.php?id=3~~
 - ~~add links to current groups /group/members.php?group=5~~
 - ~~flash toasts ajax~~
-- deactivate pressed buttons to prevent double click
-  - add progress bar/spinner https://getbootstrap.com/docs/5.3/components/spinners/
+- ~~deactivate pressed buttons to prevent double click~~
+  - ~~add progress bar/spinner https://getbootstrap.com/docs/5.3/components/spinners/~~
 - ~~ENV for mysql instead of sqlite~~
   - ~~Docker compose~~
 - ~~EXPOSE 5000~~

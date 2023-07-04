@@ -49,7 +49,6 @@ def ajax_flash(message: str, response: dict = None):
 
 
 def buttons_html(button: str, activated: bool = False, response: dict = None):
-    print(button, activated, response)
     if response is None:
         response = dict()
     if button == 'all':
