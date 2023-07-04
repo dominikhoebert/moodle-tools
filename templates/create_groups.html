@@ -73,16 +73,23 @@
                         </div>
                     </div>
                     <div class="row g-3">
-                        <div class="col-auto" id="enroll-button">
-                            <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Enroll missing
-                                students</a>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-secondary" id="enroll-button"
+                                    onclick="update('enroll')" disabled>
+                                Enroll missing students
+                            </button>
                         </div>
-                        <div class="col-auto" id="create-button">
-                            <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Create Groups</a>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-secondary" id="create-button"
+                                    onclick="update('create')" disabled>
+                                Create Groups
+                            </button>
                         </div>
-                        <div class="col-auto" id="add-button">
-                            <a class="btn btn-secondary disabled" role="button" aria-disabled="true">Add students to
-                                groups</a>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-secondary" id="add-button" onclick="update(\'add\')"
+                                    disabled>
+                                Add students to groups
+                            </button>
                         </div>
                     </div>
                 </form>

@@ -54,6 +54,12 @@ function parse_response(response, button) {
         else if(key=="Error") {
             console.log(key, value)
         }
+        else if(key.endsWith('-button')) {
+            element = document.getElementById(key)
+            if (element) {
+                element.disabled = value;
+            }
+        }
         else {
             element = document.getElementById(key)
             if (element) {

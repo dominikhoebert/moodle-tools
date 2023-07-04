@@ -51,6 +51,7 @@ def ajax_flash(message: str, response: dict = None):
 def buttons_html(button: str, activated: bool = False, response: dict = None):
     if response is None:
         response = dict()
+    # TODO Refacotr this
     if button == "enroll" or button == 'all':
         if activated:
             response['enroll-button'] = '<a class="btn btn-secondary" onclick="update(\'enroll\')" ' \
