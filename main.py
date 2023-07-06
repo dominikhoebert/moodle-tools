@@ -5,11 +5,13 @@ from flask import Flask, render_template, redirect, url_for
 from user import User
 from user_management import reporting
 from create_groups import create_groups
+from gridjs_test import gridjs
 from models import db, login_manager, logger, sess, env
 
 app = Flask(__name__)
 app.register_blueprint(reporting)
 app.register_blueprint(create_groups)
+app.register_blueprint(gridjs)
 app.secret_key = urandom(12)
 app.config["SQLALCHEMY_DATABASE_URI"] = env.db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

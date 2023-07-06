@@ -65,6 +65,7 @@ Contact your moodle administrator for a moodle service including following web s
 - ~~Remove password from session~~
 - ~~Environment variables for standard values: moodle_url, moodle_service~~
 - ~~add screenshots to readme~~
+- Favicon
 - preview table https://gridjs.io/docs/examples/html-cells
     - color selected columns
     - color missing students
