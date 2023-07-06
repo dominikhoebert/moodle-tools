@@ -11,6 +11,7 @@ function parse_response(data) {
         sort: true,
   pagination: true,
   fixedHeader: true,
+  resizable: true,
     }).render(document.getElementById("wrapper"));
 }
 
