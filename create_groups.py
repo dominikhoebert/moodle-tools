@@ -81,7 +81,7 @@ def create_response(kind: str, moodle: MoodleSyncTesting, response: dict = None)
             courses_html += f'<li><a class="dropdown-item" onclick="update(\'course/\' + {course_id})">{course_name}</a></li>'
         response['select-course-list'] = courses_html
     if moodle.students is not None and (kind == "student_list" or kind == "all"):
-        response['student-preview'] = moodle.students_original.to_html(table_id="datatablesSimple")
+        response['student-preview'] = moodle.students_original.to_json(orient="records")
         group_column_names_html = ""
         column_names_html = ""
         for column_names in moodle.students_original.columns.to_list():

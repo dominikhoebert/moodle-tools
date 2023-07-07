@@ -62,6 +62,9 @@ function parse_response(response, button) {
                 element.disabled = (value === 'true');
             }
         }
+        else if(key=="student-preview") {
+            create_grid(value);
+        }
         else {
             element = document.getElementById(key)
             if (element) {
@@ -73,6 +76,27 @@ function parse_response(response, button) {
     if (datatablesSimple) {
         new simpleDatatables.DataTable(datatablesSimple);
     }
+    set_grid_background();
+}
+
+function create_grid(data) {
+    data = JSON.parse(data)
+    const grid = new gridjs.Grid({
+        data: data,
+        sort: true,
+  pagination: true,
+  fixedHeader: true,
+  resizable: true,
+    }).render(document.getElementById("grid-wrapper"));
+}
+
+function set_grid_background() {
+    let cn = document.getElementById("column-name").innerHTML.trim();
+    let sg = document.getElementById("select-group").innerHTML.trim();
+    let style_tag = document.getElementById("gridbg");
+    style_tag.innerHTML = "th[data-column-id=" + cn + "] {background-color: #31d2f2 !important;} " +
+        "th[data-column-id=" + sg + "] {background-color: #22bf76 !important;}";
+    console.log(style_tag);
 }
 
 update('get_all')

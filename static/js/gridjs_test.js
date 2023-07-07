@@ -13,7 +13,6 @@ function parse_response(data) {
     }
     console.log(columns)
     const grid = new gridjs.Grid({
-        columns: columns,
         data: data,
         sort: true,
   pagination: true,

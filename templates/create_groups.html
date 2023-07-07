@@ -50,7 +50,7 @@
                         <div class="col-auto">
                             <label class="form-label" for="select-group">Group name column</label>
                             <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                <button class="btn btn-success dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false" id="select-group">
                                     Select
@@ -62,7 +62,7 @@
                         <div class="col-auto">
                             <label class="form-label" for="column-name">Email/Moodle-ID</label>
                             <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                <button class="btn btn-info dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false" id="column-name">
                                     Select
@@ -104,7 +104,9 @@
                 <i class="fas fa-table me-1"></i>
                 Students Preview
             </div>
-            <div class="card-body" id="student-preview">
+            <div class="card-body">
+                <style id="gridbg"></style>
+                <div id="grid-wrapper"></div>
             </div>
         </div>
     </div>
@@ -147,5 +149,7 @@
         </div>
     </div>
 </div>
+<link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
 <script src="{{ url_for('static', filename='js/create_groups.js') }}"></script>
 {% endblock %}
