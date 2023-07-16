@@ -180,6 +180,28 @@ class MoodleSyncTesting(MoodleSync):
                 enrolments.append({'roleid': 5, 'userid': id, 'courseid': self.course_id})  # 5 = student
             self.enroll_students(enrolments)
 
+    def get_missing_students(self):
+        if self.right_on is not None and self.course_id is not None:
+            self.join_enrolled_students()
+            missing_students = self.get_not_enrolled_students()
+            missing_students = missing_students[self.column_name].tolist()
+            return missing_students
+        else:
+            return None
+
+    def check_all_groups_exist(self):
+        if self.groups is None or self.students is None or self.group_column_name is None:
+            return False
+        existing_groups = [g["name"] for g in self.groups]
+        for group in self.group_names():
+            if group not in existing_groups:
+                return False
+        return True
+
+    def add_existing_groups(self):
+        if self.check_all_groups_exist():
+            self.group_names_to_id = {group["name"]: group["id"] for group in self.groups}
+
 
 if __name__ == '__main__':
     import json

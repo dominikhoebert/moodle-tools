@@ -65,6 +65,20 @@ function parse_response(response, button) {
         else if(key=="student-preview") {
             create_grid(value);
         }
+        else if(key=="missing-students") {  // TODO: Bug when reloading page --> create_response(kind="all") missing students could be set before create_grid()
+            remove_backgroundColor();
+            value.forEach(function (student) {
+                let cn = document.getElementById("column-name").innerHTML.trim();
+                elements = document.querySelectorAll("td[data-column-id='" + cn + "']")
+                if (elements) {
+                    elements.forEach(function (element) {
+                        if (element.innerHTML.trim() == student) {
+                            element.style.backgroundColor = "#ff0000";
+                        }
+                    })
+                }
+            })
+        }
         else {
             element = document.getElementById(key)
             if (element) {
@@ -77,6 +91,15 @@ function parse_response(response, button) {
         new simpleDatatables.DataTable(datatablesSimple);
     }
     set_grid_background();
+}
+
+function remove_backgroundColor() {
+    elements = document.querySelectorAll("td[style]")
+    if (elements) {
+        elements.forEach(function (element) {
+            element.style.backgroundColor = "";
+        })
+    }
 }
 
 function create_grid(data) {
@@ -96,7 +119,6 @@ function set_grid_background() {
     let style_tag = document.getElementById("gridbg");
     style_tag.innerHTML = "th[data-column-id=" + cn + "] {background-color: #31d2f2 !important;} " +
         "th[data-column-id=" + sg + "] {background-color: #22bf76 !important;}";
-    console.log(style_tag);
 }
 
 update('get_all')
