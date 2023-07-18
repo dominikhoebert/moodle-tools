@@ -168,7 +168,10 @@ def course(course_id):
             moodle = current_user.moodle
             moodle.course_id = course_id
             moodle.group_names_to_id = None  # reset group names
-            moodle.groups = moodle.get_groups(moodle.course_id)
+            try:
+                moodle.groups = moodle.get_groups(moodle.course_id)
+            except SystemError as e:
+                return ajax_flash("Error while getting groups: " + str(e))
             moodle.add_existing_groups()
             session["moodle"] = moodle.to_json()
 
@@ -250,7 +253,10 @@ def create():
         moodle.join_enrolled_students()
         moodle.clean_students()
         groups_count = moodle.create_groups()
-        moodle.groups = moodle.get_groups(moodle.course_id)
+        try:
+            moodle.groups = moodle.get_groups(moodle.course_id)
+        except SystemError as e:
+            return ajax_flash("Error while getting groups: " + str(e))
         moodle.add_existing_groups()
         session["moodle"] = moodle.to_json()
 
