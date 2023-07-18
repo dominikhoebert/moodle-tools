@@ -67,6 +67,16 @@ function parse_response(response, button) {
         }
         else if(key=="missing-students") {  // TODO: Bug when reloading page --> create_response(kind="all") missing students could be set before create_grid()
             remove_backgroundColor();
+            if (value.length == 0) {
+                let element = document.getElementById("missing-students-text")
+                element.innerHTML = "";
+                element.style.backgroundColor = "";
+            }
+            else {
+                let element = document.getElementById("missing-students-text")
+                element.innerHTML = value.length + " students are not enrolled in this course";
+                element.style.backgroundColor = "#ff0000";
+            }
             value.forEach(function (student) {
                 let cn = document.getElementById("column-name").innerHTML.trim();
                 elements = document.querySelectorAll("td[data-column-id='" + cn + "']")

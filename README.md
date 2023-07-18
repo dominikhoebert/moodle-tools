@@ -49,7 +49,7 @@ Contact your moodle administrator for a moodle service including following web s
 
 ## TODO
 
-- add "5 students are not enrolled in this course"
+- ~~add "5 students are not enrolled in this course"~~
 - File "C:\Users\Dominik\PycharmProjects\moodle-tools\moodle_sync.py", line 32, in get_groups
     response = moodle_api.call('core_group_get_course_groups', self.url, self.key, courseid=course_id)
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
