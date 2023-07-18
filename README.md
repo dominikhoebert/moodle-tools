@@ -49,6 +49,14 @@ Contact your moodle administrator for a moodle service including following web s
 
 ## TODO
 
+- add "5 students are not enrolled in this course"
+- File "C:\Users\Dominik\PycharmProjects\moodle-tools\moodle_sync.py", line 32, in get_groups
+    response = moodle_api.call('core_group_get_course_groups', self.url, self.key, courseid=course_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dominik\PycharmProjects\moodle-tools\moodle_api.py", line 46, in call
+    raise SystemError("Error calling Moodle API\n", response)
+- add spinner to dropdowns
+- SystemError: ('Error calling Moodle API\n', {'exception': 'required_capability_exception', 'errorcode': 'nopermissions', 'message': 'Sie haben aktuell nicht das Recht, dies zu tun (Gruppen verwalten).'})
 - ~~catch wrong url login error~~
 - ~~use ajax https://flask.palletsprojects.com/en/2.3.x/patterns/javascript/~~
 - ~~add students to already existing groups~~

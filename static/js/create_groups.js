@@ -79,6 +79,9 @@ function parse_response(response, button) {
                 }
             })
         }
+        else if (key == "reload") {
+            location.reload();
+        }
         else {
             element = document.getElementById(key)
             if (element) {
@@ -103,6 +106,8 @@ function remove_backgroundColor() {
 }
 
 function create_grid(data) {
+    const gridWrapper = document.getElementById("grid-wrapper");
+    gridWrapper.innerHTML = '';
     data = JSON.parse(data)
     const grid = new gridjs.Grid({
         data: data,
@@ -110,7 +115,7 @@ function create_grid(data) {
   pagination: true,
   fixedHeader: true,
   resizable: true,
-    }).render(document.getElementById("grid-wrapper"));
+    }).render(gridWrapper);
 }
 
 function set_grid_background() {

@@ -136,13 +136,19 @@ def file_upload():
         else:
             return ajax_flash("File type not supported")
 
+        df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
+
         if get_moodle() is not None:
+            use_redirect = current_user.moodle.students is not None
             current_user.moodle.students_original = None
             current_user.moodle.students = df
             current_user.moodle.column_name = None  # reset column names
             current_user.moodle.group_column_name = None  # reset group column names
             current_user.moodle.group_names_to_id = None  # reset group names
             session["moodle"] = current_user.moodle.to_json()
+
+            if use_redirect:
+                return {"reload": "true"}
 
             response = create_response(kind='student_list', moodle=current_user.moodle)
             response = create_response(kind='group_name', moodle=current_user.moodle, response=response)
